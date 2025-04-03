@@ -1,5 +1,14 @@
 import random
 import tkinter as tk
+import pygame
+
+# initialise pygame
+pygame.init()
+
+# Set up the display
+screen = pygame.display.set_mode((400, 400))
+pygame.display.set_caption("Test Window")
+
 
 def create_board(size):
     return [['O' for _ in range(size)] for _ in range(size)]
