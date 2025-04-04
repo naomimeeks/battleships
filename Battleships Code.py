@@ -6,8 +6,25 @@ import pygame
 pygame.init()
 
 # Set up the display
-screen = pygame.display.set_mode((400, 400))
+lightBlue = pygame.Color(173,216,253)
+darkBlue = pygame.Color(0,0,173)
+screen = pygame.display.set_mode((1000, 1000))
 pygame.display.set_caption("Test Window")
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Fill the screen with light blue
+    screen.fill(lightBlue)
+    
+    # trying a rectangle
+    pygame.draw.rect(screen, darkBlue, [75, 10, 50, 20], 2)
+    pygame.display.update()
+
+pygame.quit()
 
 
 def create_board(size):
