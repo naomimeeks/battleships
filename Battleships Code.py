@@ -1,39 +1,19 @@
 import random
 import tkinter as tk
 import pygame
-
+import numpy as np  # this is to use 2D arrays
 # initialise pygame
 pygame.init()
+
+### Generally methods go at the top and you call them at the bottom ###
 
 # Set up the display
 lightBlue = pygame.Color(173,216,253)
 darkBlue = pygame.Color(0,0,173)
-screen = pygame.display.set_mode((1000, 1000))
+screenWidth = 1500
+screenHeight = 1000
+screen = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption("Test Window")
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # Fill the screen with light blue
-    screen.fill(lightBlue)
-    
-    # trying a rectangle
-    pygame.draw.rect(screen, darkBlue, [75, 10, 50, 20], 2)
-    pygame.display.update()
-
-pygame.quit()
-
-
-def create_board(size):
-    return [['O' for _ in range(size)] for _ in range(size)]
-
-def print_board(board):
-    for row in board:
-        print(' '.join(row))
-    print()
 
 def place_ship(board, ship_size):
     size = len(board)
@@ -69,6 +49,7 @@ def play_battleship():
     
     player_ships = sum(row.count('S') for row in player_board)
     computer_ships = sum(row.count('S') for row in computer_board)
+
     
     while player_ships > 0 and computer_ships > 0:
         print("Your board:")
@@ -119,4 +100,59 @@ def play_battleship():
     else:
         print("Congratulations! You won!")
 
-play_battleship()
+
+cellSize = 40
+rows, cols = 10, 10
+
+# create board
+def createBoard(rows, cols):
+    return np.full((rows,cols), 0)
+    
+# draws each small square
+def drawSquare(x,y):
+    pygame.draw.rect(screen, darkBlue, [x, y , 50, 50], 10)
+    pygame.display.update()
+    return()
+
+# draws entire board
+def drawBoard(board):
+    for row in range(board.shape[0]):
+        for col in range(board.shape[1]):
+            x = (col * cellSize) + 50
+            y = (row *cellSize) + 50
+            drawSquare(x,y)
+
+# --- getting GUI to run --- 
+
+# Fill the screen with light blue
+screen.fill(lightBlue)
+pygame.display.update()
+
+board1 = createBoard(10,10)
+drawBoard(board1)
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            col = mouse_x // cellSize
+            row = mouse_y // cellSize
+            if 0 <= row < rows and 0 <= col < cols:
+                board1[row][col] = 1 - board1[row][col]
+
+pygame.quit()
+
+#play_battleship()
+
+
+
+
+
+
+
+
