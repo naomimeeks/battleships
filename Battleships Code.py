@@ -109,12 +109,13 @@ pygame.display.set_caption("Test Window")
 
 # Square class stores information about the square like size
 class Square:
-    size = 40
     # using init and self.foo means that different instances of the same class can have different values
-    def __init__(self, x, y, colour):
+    def __init__(self, x, y, colour, square_size):
         self.x = x
         self.y = y
         self.colour = colour
+        self.size = square_size
+        
 
     # draws each small square
     def draw(self):
@@ -124,10 +125,7 @@ class Square:
 
     # checks if given co ordinates are inside the square
     def is_clicked(self, x, y):
-        if self.x <= x <= (self.x + size) and self.y <= py <= (self.y + size):      
-            return(True)
-        else:
-            return(False)
+        return (self.x <= x <= (self.x + self.size) and self.y <= y <= (self.y + self.size))
 
     # changes colour of square
     def change_colour(self, new_colour):
@@ -144,13 +142,15 @@ class Board:
         self.square_colour = square_colour
         self.board = self.create()
 
+##    def get_board(self):
+##        return (self.board)
 
     # creates a 2D array of squares
     def create(self):
         board = np.empty((self.rows, self.cols), dtype=object)
         for i in range(self.rows):
             for j in range(self.cols):
-                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_size)
+                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_colour, self.square_size)
         return (board)  
 
 
@@ -158,24 +158,33 @@ class Board:
     def draw(self):
         for row in range(self.board.shape[0]):
             for col in range(self.board.shape[1]):
-                x = (col * self.square_size) + 50
-                y = (row *self.square_size) + 50
-                square = Square(x, y, self.square_colour)
-                square.draw()
-        return()
+                self.board[row, col].draw()
+        return
 
-    # gets position of clicked square in array given coordinates
-    def square_clicked(self, x, y):
+    # gets row position of clicked square in array given coordinates
+    def row_clicked(self, x, y):
         for row in range (self.board.shape[0]):
             for col in range (self.board.shape[1]):
-                if square.is_clicked(x, y):
-                    return(row,col)
-        return()
+                if self.board[row,col].is_clicked(x, y):
+                    return(row)
+        return None
+    
+    # gets col position of clicked square in array given coordinates
+    def col_clicked(self, x, y):
+        for row in range (self.board.shape[0]):
+            for col in range (self.board.shape[1]):
+                if self.board[row,col].is_clicked(x, y):
+                    return(col)
+        return None
         
     # changes colour of square given row and col in array
     def change_square_colour(self, row, col, new_colour):
-        self.board[row, col].change_colour(mid_blue)
-        return()
+        if row is not None and col is not None:
+            self.board[row, col].change_colour(mid_blue)
+            pygame.display.update()
+        else:
+            print ("foo")
+        return
 
 
 # ___ getting GUI to run ___ #
@@ -197,9 +206,11 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            board1.change_square_colour(board1.square_clicked(mouse_x, mouse_y))           
-                        
-                        
+            row = board1.row_clicked(mouse_x, mouse_y)
+            col = board1.col_clicked(mouse_x, mouse_y)
+            board1.change_square_colour(row, col, mid_blue)
+            board1.draw()
+                                                
 
 pygame.quit()
 
