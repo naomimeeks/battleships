@@ -101,6 +101,32 @@ def play_battleship():
         print("Congratulations! You won!")
 
 
+
+### ____ New Code etc etc ____ ###
+
+
+class Square:
+    size = 40
+    # using init and self.foo means that different instances of the same class can have different values
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    # draws each small square
+    def draw(self):
+        pygame.draw.rect(screen, darkBlue, [self.x, self.y , 50, 50], 10)
+        pygame.display.update()
+        return()
+
+    # checks if given co ordinates are inside the square
+    def is_clicked(self, x, y):
+        if self.x <= x <= (self.x + size) and self.y <= py <= (self.y + size):      
+            return(True)
+        else:
+            return(False)
+
+
+
 cellSize = 40
 rows, cols = 10, 10
 
@@ -108,11 +134,6 @@ rows, cols = 10, 10
 def createBoard(rows, cols):
     return np.full((rows,cols), 0)
     
-# draws each small square
-def drawSquare(x,y):
-    pygame.draw.rect(screen, darkBlue, [x, y , 50, 50], 10)
-    pygame.display.update()
-    return()
 
 # draws entire board
 def drawBoard(board):
@@ -120,7 +141,8 @@ def drawBoard(board):
         for col in range(board.shape[1]):
             x = (col * cellSize) + 50
             y = (row *cellSize) + 50
-            drawSquare(x,y)
+            square = Square(x, y)
+            square.draw()
 
 # --- getting GUI to run --- 
 
