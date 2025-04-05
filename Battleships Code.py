@@ -8,12 +8,6 @@ pygame.init()
 ### Generally methods go at the top and you call them at the bottom ###
 
 # Set up the display
-lightBlue = pygame.Color(173,216,253)
-darkBlue = pygame.Color(0,0,173)
-screenWidth = 1500
-screenHeight = 1000
-screen = pygame.display.set_mode((screenWidth, screenHeight))
-pygame.display.set_caption("Test Window")
 
 def place_ship(board, ship_size):
     size = len(board)
@@ -103,18 +97,28 @@ def play_battleship():
 
 
 ### ____ New Code etc etc ____ ###
+        
+light_blue = pygame.Color(173, 216, 253)
+dark_blue = pygame.Color(0, 0, 173)
+mid_blue = pygame.Color(0, 0, 205)
+screen_width = 1500
+screen_height = 1000
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Test Window")
 
 
+# Square class stores information about the square like size
 class Square:
     size = 40
     # using init and self.foo means that different instances of the same class can have different values
-    def __init__(self, x, y):
+    def __init__(self, x, y, colour):
         self.x = x
         self.y = y
+        self.colour = colour
 
     # draws each small square
     def draw(self):
-        pygame.draw.rect(screen, darkBlue, [self.x, self.y , 50, 50], 10)
+        pygame.draw.rect(screen, self.colour, [self.x, self.y , 50, 50], 10)
         pygame.display.update()
         return()
 
@@ -125,33 +129,65 @@ class Square:
         else:
             return(False)
 
+    # changes colour of square
+    def change_colour(self, new_colour):
+        self.colour = new_colour
+        return()
 
 
-cellSize = 40
-rows, cols = 10, 10
 
-# create board
-def createBoard(rows, cols):
-    return np.full((rows,cols), 0)
-    
+class Board:
+    def __init__(self, rows, cols, square_colour, square_size):
+        self.rows = rows
+        self.cols = cols
+        self.square_size = square_size
+        self.square_colour = square_colour
+        self.board = self.create()
 
-# draws entire board
-def drawBoard(board):
-    for row in range(board.shape[0]):
-        for col in range(board.shape[1]):
-            x = (col * cellSize) + 50
-            y = (row *cellSize) + 50
-            square = Square(x, y)
-            square.draw()
 
-# --- getting GUI to run --- 
+    # creates a 2D array of squares
+    def create(self):
+        board = np.empty((self.rows, self.cols), dtype=object)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_size)
+        return (board)  
+
+
+    # draws entire board
+    def draw(self):
+        for row in range(self.board.shape[0]):
+            for col in range(self.board.shape[1]):
+                x = (col * self.square_size) + 50
+                y = (row *self.square_size) + 50
+                square = Square(x, y, self.square_colour)
+                square.draw()
+        return()
+
+    # gets position of clicked square in array given coordinates
+    def square_clicked(self, x, y):
+        for row in range (self.board.shape[0]):
+            for col in range (self.board.shape[1]):
+                if square.is_clicked(x, y):
+                    return(row,col)
+        return()
+        
+    # changes colour of square given row and col in array
+    def change_square_colour(self, row, col, new_colour):
+        self.board[row, col].change_colour(mid_blue)
+        return()
+
+
+# ___ getting GUI to run ___ #
 
 # Fill the screen with light blue
-screen.fill(lightBlue)
+screen.fill(light_blue)
 pygame.display.update()
 
-board1 = createBoard(10,10)
-drawBoard(board1)
+board1 = Board(10, 10, dark_blue, 40)
+board1.create()
+board1.draw()
+
 
 running = True
 while running:
@@ -159,13 +195,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            
+        if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            col = mouse_x // cellSize
-            row = mouse_y // cellSize
-            if 0 <= row < rows and 0 <= col < cols:
-                board1[row][col] = 1 - board1[row][col]
+            board1.change_square_colour(board1.square_clicked(mouse_x, mouse_y))           
+                        
+                        
 
 pygame.quit()
 
