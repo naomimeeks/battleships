@@ -8,17 +8,17 @@ pygame.init()
 ### Generally methods go at the top and you call them at the bottom ###
 
 def play_battleship():
-    size = 10
-    num_ships = 3
-    ship_sizes = [3, 4, 5]
-    
-    player_board = create_board(size)
-    computer_board = create_board(size)
-    computer_view = create_board(size)
-    
-    for ship_size in ship_sizes:
-        place_ship(player_board, ship_size)
-        place_ship(computer_board, ship_size)
+##    size = 10
+##    num_ships = 3
+##    ship_sizes = [3, 4, 5]
+##    
+##    player_board = create_board(size)
+##    computer_board = create_board(size)
+##    computer_view = create_board(size)
+##    
+##    for ship_size in ship_sizes:
+##        place_ship(player_board, ship_size)
+##        place_ship(computer_board, ship_size)
     
     player_ships = sum(row.count('S') for row in player_board)
     computer_ships = sum(row.count('S') for row in computer_board)
@@ -188,6 +188,12 @@ class Board:
                     for i in range(ship_size):
                         self.board[row+i][col].change_colour(pink)
                     return
+                
+    def place_ships(self, num_ships):
+        ship_sizes = [2, 3, 4, 5]        
+        for ship_size in ship_sizes:
+            self.place_ship(ship_size)
+            #place_ship(computer_board, ship_size)
 
 
 
@@ -197,13 +203,14 @@ class Board:
 screen.fill(light_blue)
 pygame.display.update()
 
-guess_board = Board(10, 10, dark_blue, 50, 50, 50)
-guess_board.create()
-guess_board.draw()
+computer_board = Board(10, 10, dark_blue, 50, 50, 50)
+computer_board.create()
+computer_board.place_ships(3)
+computer_board.draw()
 
 boats_board = Board(10, 10, dark_blue, 50, 600, 50)
 boats_board.create()
-boats_board.place_ship(3)
+boats_board.place_ships(3)
 boats_board.draw()
 
 
@@ -217,10 +224,10 @@ while running:
         # if you click on a square, it changes colour
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            row = guess_board.row_clicked(mouse_x, mouse_y)
-            col = guess_board.col_clicked(mouse_x, mouse_y)
-            guess_board.change_square_colour(row, col, red)
-            guess_board.draw()
+            row = computer_board.row_clicked(mouse_x, mouse_y)
+            col = computer_board.col_clicked(mouse_x, mouse_y)
+            computer_board.change_square_colour(row, col, red)
+            computer_board.draw()
                                                 
 
 pygame.quit()
