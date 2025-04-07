@@ -2,79 +2,9 @@ import random
 import tkinter as tk
 import pygame
 import numpy as np  # this is to use 2D arrays
-# initialise pygame
-pygame.init()
+pygame.init() # initialise pygame
 
 ### Generally methods go at the top and you call them at the bottom ###
-
-##def play_battleship():
-##    size = 10
-##    num_ships = 3
-##    ship_sizes = [3, 4, 5]
-##    
-##    player_board = create_board(size)
-##    computer_board = create_board(size)
-##    computer_view = create_board(size)
-##    
-##    for ship_size in ship_sizes:
-##        place_ship(player_board, ship_size)
-##        place_ship(computer_board, ship_size)
-    
-##    player_ships = sum(row.count('S') for row in player_board)
-##    computer_ships = sum(row.count('S') for row in computer_board)
-##
-##    
-##    while player_ships > 0 and computer_ships > 0:
-##        print("Your board:")
-##        print_board(player_board)
-##        print("Your guesses:")
-##        print_board(computer_view)
-        
-##        # Player's turn
-##        while True:
-##            try:
-##                row = int(input("Enter row (0-9): "))
-##                col = int(input("Enter column (0-9): "))
-##                if 0 <= row < size and 0 <= col < size and computer_view[row][col] == 'O':
-##                    break
-##                print("Invalid input. Try again.")
-##            except ValueError:
-##                print("Invalid input. Try again.")
-##        
-##        if computer_board[row][col] == 'S':
-##            print("Hit!")
-##            computer_view[row][col] = 'X'
-##            computer_board[row][col] = 'X'
-##            computer_ships -= 1
-##        else:
-##            print("Miss!")
-##            computer_view[row][col] = 'M'
-##        
-##        # Computer's turn
-##        while True:
-##            row, col = random.randint(0, size-1), random.randint(0, size-1)
-##            if player_board[row][col] != 'X' and player_board[row][col] != 'M':
-##                break
-##        
-##        print(f"\nComputer guesses: {row}, {col}")
-##        if player_board[row][col] == 'S':
-##            print("Computer hit your ship!")
-##            player_board[row][col] = 'X'
-##            player_ships -= 1
-##        else:
-##            print("Computer missed!")
-##            player_board[row][col] = 'M'
-##        
-##        print(f"\nYour ships remaining: {player_ships}")
-##        print(f"Computer ships remaining: {computer_ships}\n")
-##    
-##    if player_ships == 0:
-##        print("Game over! The computer won.")
-##    else:
-##        print("Congratulations! You won!")
-
-
-
 ### ____ New Code etc etc ____ ###
         
 light_blue = pygame.Color(173, 216, 253)
@@ -96,6 +26,7 @@ class Square:
         self.y = y + y_indent
         self.colour = colour
         self.size = square_size
+        self.is_ship = False
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
         
 
@@ -114,10 +45,14 @@ class Square:
         self.colour = new_colour
         return()
 
-    #gets colour of square
+    # gets colour of square
     def get_colour(self):
         return(self.colour)
 
+    # makes square a ship
+    def make_ship(self):
+        self.is_ship = True
+        return()
 
 
 class Board:
@@ -194,6 +129,7 @@ class Board:
                 col = random.randint(0, size - ship_size)
                 if all(self.board[row][col+i].get_colour() == dark_blue for i in range(ship_size)):
                     for i in range(ship_size):
+                        self.board[row][col+i].make_ship()
                         self.board[row][col+i].change_colour(pink)
                     return
             else:
@@ -201,6 +137,7 @@ class Board:
                 col = random.randint(0, size - 1)
                 if all(self.board[row+i][col].get_colour() == dark_blue for i in range(ship_size)):
                     for i in range(ship_size):
+                        self.board[row+i][col].make_ship()
                         self.board[row+i][col].change_colour(pink)
                     return
                 
@@ -208,46 +145,24 @@ class Board:
         ship_sizes = [2, 3, 4, 5]        
         for ship_size in ship_sizes:
             self.place_ship(ship_size)
-            #place_ship(computer_board, ship_size)
+
+    def select_random_square(self):
+        # Get the number of rows and columns in the board
+        row = random.randint(0, self.rows - 1)
+        col = random.randint(0, self.cols - 1)       
+        selected_square = self.board[row, col]       
+        return selected_square
+            
 
 ###########################################################################################
-
-    # Player's turn
-
-def some_function():
-    if computer_board[row][col] == 'S':
-        print("Hit!")
-        computer_view[row][col] = 'X'
-        computer_board[row][col] = 'X'
-        computer_ships -= 1
+# computer chooses a random square and it changes to a different colour on the board
+def computers_turn(player_board):
+    random_square = player_board.select_random_square()
+    if(random_square.is_ship):
+        random_square.change_colour(red)
     else:
-        print("Miss!")
-        computer_view[row][col] = 'M'
-
-    # Computer's turn
-    while True:
-        row, col = random.randint(0, size-1), random.randint(0, size-1)
-        if player_board[row][col] != 'X' and player_board[row][col] != 'M':
-            break
-
-    print(f"\nComputer guesses: {row}, {col}")
-    if player_board[row][col] == 'S':
-        print("Computer hit your ship!")
-        player_board[row][col] = 'X'
-        player_ships -= 1
-    else:
-        print("Computer missed!")
-        player_board[row][col] = 'M'
-
-    print(f"\nYour ships remaining: {player_ships}")
-    print(f"Computer ships remaining: {computer_ships}\n")
-
-    if player_ships == 0:
-        print("Game over! The computer won.")
-    else:
-        print("Congratulations! You won!")
-
-    
+        random_square.change_colour(green)
+    pygame.display.update()
 
 # ___ getting GUI to run ___ #
 
@@ -255,17 +170,17 @@ def some_function():
 screen.fill(light_blue)
 pygame.display.update()
 
+# creating and initialising the computer's (guessing) board
 computer_board = Board(10, 10, dark_blue, 50, 50, 50)
 computer_board.create()
 computer_board.place_ships(3)
 computer_board.draw()
 
+# creating and initialising the player's board
 boats_board = Board(10, 10, dark_blue, 50, 600, 50)
 boats_board.create()
 boats_board.place_ships(3)
 boats_board.draw()
-
-
 
 
 # Means that clicking the X will close the window
@@ -273,30 +188,26 @@ running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-            
+            running = False            
         # if you click on a square, it changes colour to red
         # if you click on a ship, it changes the colour to green
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
             row = computer_board.row_clicked(mouse_x, mouse_y)
             col = computer_board.col_clicked(mouse_x, mouse_y)
+            # checks if click is on the board
             if (computer_board.is_in_bounds(mouse_x, mouse_y)):
-                if(computer_board.get_square_colour(row, col) == pink):
-                    computer_board.change_square_colour(row, col, green)
-                    computer_board.draw()
-                else:
+                if(computer_board.board[row, col].is_ship):
                     computer_board.change_square_colour(row, col, red)
                     computer_board.draw()
-            #computer_turn()
-            
-
-            
-                                                
-
+                else:
+                    computer_board.change_square_colour(row, col, green)
+                    computer_board.draw()
+            # time for the computer to go
+            computers_turn(boats_board)
+            boats_board.draw()
+                                                           
 pygame.quit()
-
-#play_battleship()
 
 
 
