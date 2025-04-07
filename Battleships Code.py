@@ -100,7 +100,7 @@ def play_battleship():
         
 light_blue = pygame.Color(173, 216, 253)
 dark_blue = pygame.Color(0, 0, 173)
-mid_blue = pygame.Color(0, 0, 205)
+mid_blue = pygame.Color(200, 0, 0)
 screen_width = 1500
 screen_height = 1000
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -110,16 +110,16 @@ pygame.display.set_caption("Test Window")
 # Square class stores information about the square like size
 class Square:
     # using init and self.foo means that different instances of the same class can have different values
-    def __init__(self, x, y, colour, square_size):
-        self.x = x
-        self.y = y
+    def __init__(self, x, y, colour, square_size, indent):
+        self.x = x + indent
+        self.y = y + indent
         self.colour = colour
         self.size = square_size
         
 
     # draws each small square
     def draw(self):
-        pygame.draw.rect(screen, self.colour, [self.x, self.y , 50, 50], 10)
+        pygame.draw.rect(screen, self.colour, [self.x, self.y , 50, 50], 0)
         pygame.display.update()
         return()
 
@@ -150,7 +150,7 @@ class Board:
         board = np.empty((self.rows, self.cols), dtype=object)
         for i in range(self.rows):
             for j in range(self.cols):
-                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_colour, self.square_size)
+                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_colour, self.square_size, 50)
         return (board)  
 
 
@@ -193,7 +193,7 @@ class Board:
 screen.fill(light_blue)
 pygame.display.update()
 
-board1 = Board(10, 10, dark_blue, 40)
+board1 = Board(10, 10, dark_blue, 50)
 board1.create()
 board1.draw()
 
