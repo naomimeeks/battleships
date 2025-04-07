@@ -7,27 +7,6 @@ pygame.init()
 
 ### Generally methods go at the top and you call them at the bottom ###
 
-# Set up the display
-
-def place_ship(board, ship_size):
-    size = len(board)
-    while True:
-        orientation = random.choice(['horizontal', 'vertical'])
-        if orientation == 'horizontal':
-            row = random.randint(0, size - 1)
-            col = random.randint(0, size - ship_size)
-            if all(board[row][col+i] == 'O' for i in range(ship_size)):
-                for i in range(ship_size):
-                    board[row][col+i] = 'S'
-                return
-        else:
-            row = random.randint(0, size - ship_size)
-            col = random.randint(0, size - 1)
-            if all(board[row+i][col] == 'O' for i in range(ship_size)):
-                for i in range(ship_size):
-                    board[row+i][col] = 'S'
-                return
-
 def play_battleship():
     size = 10
     num_ships = 3
@@ -100,57 +79,62 @@ def play_battleship():
         
 light_blue = pygame.Color(173, 216, 253)
 dark_blue = pygame.Color(0, 0, 173)
-mid_blue = pygame.Color(200, 0, 0)
+red = pygame.Color(200, 0, 0)
+pink = pygame.Color(255, 105, 180)
 screen_width = 1500
 screen_height = 1000
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Test Window")
+pygame.display.set_caption("Battleships")
 
 
 # Square class stores information about the square like size
 class Square:
     # using init and self.foo means that different instances of the same class can have different values
-    def __init__(self, x, y, colour, square_size, indent):
-        self.x = x + indent
-        self.y = y + indent
+    def __init__(self, x, y, colour, square_size, x_indent, y_indent):
+        self.x = x + x_indent
+        self.y = y + y_indent
         self.colour = colour
         self.size = square_size
+        self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
         
 
     # draws each small square
     def draw(self):
-        pygame.draw.rect(screen, self.colour, [self.x, self.y , 50, 50], 0)
+        pygame.draw.rect(screen, self.colour, self.rect, 0)
         pygame.display.update()
         return()
 
     # checks if given co ordinates are inside the square
     def is_clicked(self, x, y):
-        return (self.x <= x <= (self.x + self.size) and self.y <= y <= (self.y + self.size))
+        return self.rect.collidepoint(x, y)
 
     # changes colour of square
     def change_colour(self, new_colour):
         self.colour = new_colour
         return()
 
+    #gets colour of square
+    def get_colour(self):
+        return(self.colour)
+
 
 
 class Board:
-    def __init__(self, rows, cols, square_colour, square_size):
+    def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent):
         self.rows = rows
         self.cols = cols
         self.square_size = square_size
         self.square_colour = square_colour
+        self.x_indent = x_indent
+        self.y_indent = y_indent
         self.board = self.create()
-
-##    def get_board(self):
-##        return (self.board)
 
     # creates a 2D array of squares
     def create(self):
         board = np.empty((self.rows, self.cols), dtype=object)
         for i in range(self.rows):
             for j in range(self.cols):
-                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_colour, self.square_size, 50)
+                board[i, j] = Square(j * self.square_size, i * self.square_size, self.square_colour, self.square_size, self.x_indent, self.y_indent)
         return (board)  
 
 
@@ -180,11 +164,31 @@ class Board:
     # changes colour of square given row and col in array
     def change_square_colour(self, row, col, new_colour):
         if row is not None and col is not None:
-            self.board[row, col].change_colour(mid_blue)
+            self.board[row, col].change_colour(new_colour)
             pygame.display.update()
         else:
             print ("foo")
         return
+
+    def place_ship(self, ship_size):
+        size = self.board.shape[0]
+        while True:
+            orientation = random.choice(['horizontal', 'vertical'])
+            if orientation == 'horizontal':
+                row = random.randint(0, size - 1)
+                col = random.randint(0, size - ship_size)
+                if all(self.board[row][col+i].get_colour() == dark_blue for i in range(ship_size)):
+                    for i in range(ship_size):
+                        self.board[row][col+i].change_colour(pink)
+                    return
+            else:
+                row = random.randint(0, size - ship_size)
+                col = random.randint(0, size - 1)
+                if all(self.board[row+i][col].get_colour() == dark_blue for i in range(ship_size)):
+                    for i in range(ship_size):
+                        self.board[row+i][col].change_colour(pink)
+                    return
+
 
 
 # ___ getting GUI to run ___ #
@@ -193,23 +197,30 @@ class Board:
 screen.fill(light_blue)
 pygame.display.update()
 
-board1 = Board(10, 10, dark_blue, 50)
-board1.create()
-board1.draw()
+guess_board = Board(10, 10, dark_blue, 50, 50, 50)
+guess_board.create()
+guess_board.draw()
+
+boats_board = Board(10, 10, dark_blue, 50, 600, 50)
+boats_board.create()
+boats_board.place_ship(3)
+boats_board.draw()
 
 
+# Means that clicking the X will close the window
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+            
+        # if you click on a square, it changes colour
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            row = board1.row_clicked(mouse_x, mouse_y)
-            col = board1.col_clicked(mouse_x, mouse_y)
-            board1.change_square_colour(row, col, mid_blue)
-            board1.draw()
+            row = guess_board.row_clicked(mouse_x, mouse_y)
+            col = guess_board.col_clicked(mouse_x, mouse_y)
+            guess_board.change_square_colour(row, col, red)
+            guess_board.draw()
                                                 
 
 pygame.quit()
