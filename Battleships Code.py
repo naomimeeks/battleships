@@ -16,10 +16,10 @@ pink = pygame.Color(255, 105, 180)
 green = pygame.Color(0, 255, 0)
 
 # Variables
-background_image = pygame.image.load('background.png')
+#background_image = pygame.image.load('background.png')
 pygame.display.set_caption("Battleships")
-rows = 13
-cols = 13
+rows = 9
+cols = 9
 square_size = 50
 gap_size = 5
 board_spacing = 100
@@ -48,6 +48,7 @@ class Square:
         self.colour = colour
         self.size = square_size
         self.is_ship = False
+        self.been_clicked = False
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
         
 
@@ -64,6 +65,7 @@ class Square:
     # changes colour of square
     def change_colour(self, new_colour):
         self.colour = new_colour
+        self.been_clicked = True
         return()
 
     # gets colour of square
@@ -77,7 +79,7 @@ class Square:
 
 
 class Board:
-    def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent):
+    def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent, name):
         self.rows = rows
         self.cols = cols
         self.square_size = square_size
@@ -85,6 +87,7 @@ class Board:
         self.x_indent = x_indent
         self.y_indent = y_indent
         self.board = self.create()
+        self.name = name
 
     # creates a 2D array of squares
     def create(self):
@@ -117,21 +120,13 @@ class Board:
                 self.board[row, col].draw()
         return
 
-    # gets row position of clicked square in array given coordinates
-    def row_clicked(self, x, y):
-        for row in range (self.board.shape[0]):
-            for col in range (self.board.shape[1]):
-                if self.board[row,col].is_clicked(x, y):
-                    return(row)
-        return None
-    
-    # gets col position of clicked square in array given coordinates
-    def col_clicked(self, x, y):
-        for row in range (self.board.shape[0]):
-            for col in range (self.board.shape[1]):
-                if self.board[row,col].is_clicked(x, y):
-                    return(col)
-        return None
+    # gets the coordinates for a clicked square
+    def get_clicked_position(self, x, y):
+        for row in range(self.board.shape[0]):
+            for col in range(self.board.shape[1]):
+                if self.board[row, col].is_clicked(x, y):
+                    return row, col
+        return None, None
     
     # Checks if the clicked pixel are within the board's bounds
     def is_in_bounds(self, x, y):
@@ -166,7 +161,6 @@ class Board:
                 if all(self.board[row][col+i].get_colour() == dark_blue for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row][col+i].make_ship()
-                        self.board[row][col+i].change_colour(pink)
                     return
             else:
                 row = random.randint(0, size - ship_size)
@@ -174,13 +168,19 @@ class Board:
                 if all(self.board[row+i][col].get_colour() == dark_blue for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row+i][col].make_ship()
-                        self.board[row+i][col].change_colour(pink)
                     return
                 
     def place_ships(self, num_ships):
         ship_sizes = [2, 3, 4, 5]        
         for ship_size in ship_sizes:
             self.place_ship(ship_size)
+
+    def draw_ships(self):
+        for row in range(self.board.shape[0]):
+            for col in range(self.board.shape[1]):
+                if(self.board[row,col].is_ship):
+                    self.board[row][col].change_colour(pink)
+        return
 
     def select_random_square(self):
         # Get the number of rows and columns in the board
@@ -193,7 +193,14 @@ class Board:
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
+    empty_square = False
     random_square = player_board.select_random_square()
+    while (empty_square):
+        random_square = player_board.select_random_square()
+        if(random_square.been_clicked):
+            continue
+        else:
+            empty_square = True   
     if(random_square.is_ship):
         random_square.change_colour(red)
     else:
@@ -266,12 +273,13 @@ right_board_indent = margin + board_width + board_spacing
 y_indent = margin + 50 
 
 # creating and initialising the computer's (guessing) board and player's board
-computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent)
-boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent)
+computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
+boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
 computer_board.create()
 boats_board.create()
 computer_board.place_ships(3)
 boats_board.place_ships(3)
+boats_board.draw_ships()
 computer_board.draw()
 boats_board.draw()
 
@@ -284,10 +292,9 @@ while running:
         # if you click on a ship, it changes the colour to green
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            row = computer_board.row_clicked(mouse_x, mouse_y)
-            col = computer_board.col_clicked(mouse_x, mouse_y)
+            row, col = computer_board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
-            if (row is not None and col is not None):
+            if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
                 if(computer_board.board[row, col].is_ship):
                     computer_board.change_square_colour(row, col, red)
                     computer_board.draw()
