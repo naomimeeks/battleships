@@ -39,6 +39,25 @@ big_font = pygame.font.SysFont("arial", 32)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+
+# quit button class
+class Button:
+    def __init__(self, text, x, y, width, height, font, bg_color, text_color):
+     self.rect = pygame.Rect(x, y, width, height)
+     self.text = text
+     self.font = font
+     self.bg_color = bg_color
+     self.text_color = text_color
+     self.text_surf = self.font.render(self.text, True, self.text_color)
+     self.text_rect = self.text_surf.get_rect(center=self.rect.center)
+
+    def draw(self, surface):
+     pygame.draw.rect(surface, self.bg_color, self.rect)
+     surface.blit(self.text_surf, self.text_rect)
+
+    def is_clicked(self, mouse_pos):
+     return self.rect.collidepoint(mouse_pos)
+
 # Square class stores information about the square like size
 class Square:
     # using init and self.foo means that different instances of the same class can have different values
@@ -65,7 +84,7 @@ class Square:
     # changes colour of square
     def change_colour(self, new_colour):
         self.colour = new_colour
-        self.been_clicked = True
+        #self.been_clicked = True
         return()
 
     # gets colour of square
@@ -193,18 +212,15 @@ class Board:
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
-    empty_square = False
     random_square = player_board.select_random_square()
-    while (empty_square):
+    while (random_square.been_clicked):
         random_square = player_board.select_random_square()
-        if(random_square.been_clicked):
-            continue
-        else:
-            empty_square = True   
     if(random_square.is_ship):
         random_square.change_colour(red)
+        random_square.been_clicked = True
     else:
         random_square.change_colour(green)
+        random_square.been_clicked = True
     pygame.display.update()
 
 
@@ -284,6 +300,26 @@ computer_board.draw()
 boats_board.draw()
 
 
+# Create Quit Button 
+quit_button = Button("Quit", screen_width - 100, 10, 80, 40, font, red, (255, 255, 255))
+# Create Restart Button
+restart_button = Button("Restart", screen_width - 200, 10, 80, 40, font, green, (255, 255, 255))
+ 
+ # restarts the game by resetting the boards and placing new ships
+def restart_game():
+    global computer_board, boats_board
+    screen.fill(light_blue)
+    computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
+    boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
+    computer_board.create()
+    boats_board.create()
+    computer_board.place_ships(3)
+    boats_board.place_ships(3)
+    boats_board.draw_ships()
+    computer_board.draw()
+    boats_board.draw()
+
+
 # Means that clicking the X will close the window
 running = True
 while running:
@@ -292,6 +328,16 @@ while running:
         # if you click on a ship, it changes the colour to green
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
+            
+            # Quit button
+            if quit_button.is_clicked((mouse_x, mouse_y)):
+                running = False
+                break
+            # Restart button
+            if restart_button.is_clicked((mouse_x, mouse_y)):
+                restart_game()
+                continue
+                
             row, col = computer_board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
             if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
@@ -305,7 +351,11 @@ while running:
                 computers_turn(boats_board)
                 boats_board.draw()
         if event.type == pygame.QUIT:
-            running = False     
+            running = False
+
+    quit_button.draw(screen)
+    restart_button.draw(screen)
+    pygame.display.update()
                                                            
 pygame.quit()
 
