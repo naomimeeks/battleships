@@ -65,7 +65,7 @@ class Square:
     # changes colour of square
     def change_colour(self, new_colour):
         self.colour = new_colour
-        self.been_clicked = True
+        #self.been_clicked = True
         return()
 
     # gets colour of square
@@ -193,18 +193,15 @@ class Board:
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
-    empty_square = False
     random_square = player_board.select_random_square()
-    while (empty_square):
+    while (random_square.been_clicked):
         random_square = player_board.select_random_square()
-        if(random_square.been_clicked):
-            continue
-        else:
-            empty_square = True   
     if(random_square.is_ship):
         random_square.change_colour(red)
+        random_square.been_clicked = True
     else:
         random_square.change_colour(green)
+        random_square.been_clicked = True
     pygame.display.update()
 
 
