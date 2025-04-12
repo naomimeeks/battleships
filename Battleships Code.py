@@ -44,9 +44,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 # Keeps track of which screen is currently active: "game" or "settings"
 current_screen = "game"
 
-
-
-### --- Quit Button Class --- ###
+# quit button class
 class Button:
     def __init__(self, text, x, y, width, height, font, bg_color, text_color):
         self.rect = pygame.Rect(x, y, width, height)
@@ -63,11 +61,6 @@ class Button:
 
     def is_clicked(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)
-
-
-
-
-
 
 # Square class stores information about the square like size
 class Square:
@@ -95,7 +88,7 @@ class Square:
     # changes colour of square
     def change_colour(self, new_colour):
         self.colour = new_colour
-        self.been_clicked = True
+        #self.been_clicked = True
         return()
 
     # gets colour of square
@@ -226,18 +219,15 @@ class Board:
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
-    empty_square = False
     random_square = player_board.select_random_square()
-    while (empty_square):
+    while (random_square.been_clicked):
         random_square = player_board.select_random_square()
-        if(random_square.been_clicked):
-            continue
-        else:
-            empty_square = True   
     if(random_square.is_ship):
         random_square.change_colour(red)
+        random_square.been_clicked = True
     else:
         random_square.change_colour(green)
+        random_square.been_clicked = True
     pygame.display.update()
 
 
@@ -316,7 +306,6 @@ boats_board.draw_ships()
 computer_board.draw()
 boats_board.draw()
 
-
 # Main Settings button shown in top-right corner during gameplay
 settings_button = Button("Settings", screen_width - 120, 10, 100, 40, font, purple, (255, 255, 255))
 
@@ -327,6 +316,7 @@ settings_restart_button = Button("Restart Game", screen_width // 2 - 60, screen_
 settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2 + 60, 100, 40, font, dark_blue, (255, 255, 255))
 
 # restarts the game by resetting the boards and placing new ships
+
 def restart_game():
     global computer_board, boats_board
     screen.fill(light_blue)
@@ -364,6 +354,7 @@ while running:
         # if you click on a ship, it changes the colour to green
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
+            
             # If the game screen is active, respond to the Settings button
             if current_screen == "game":
                 if settings_button.is_clicked((mouse_x, mouse_y)):
@@ -388,6 +379,7 @@ while running:
                     restart_game()  # Recreate boards and ships
                     current_screen = "game"  # Return to gameplay screen
                     continue
+
             row, col = computer_board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
             if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
@@ -402,7 +394,11 @@ while running:
                 boats_board.draw()
         if event.type == pygame.QUIT:
             running = False
-                                   
+
+    quit_button.draw(screen)
+    restart_button.draw(screen)
+    pygame.display.update()
+
 pygame.quit()
 
 
