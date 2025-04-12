@@ -395,8 +395,6 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    quit_button.draw(screen)
-    restart_button.draw(screen)
     pygame.display.update()
 
 pygame.quit()
