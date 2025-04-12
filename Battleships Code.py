@@ -14,6 +14,8 @@ dark_blue = pygame.Color(0, 0, 173)
 red = pygame.Color(200, 0, 0)
 pink = pygame.Color(255, 105, 180)
 green = pygame.Color(0, 255, 0)
+light_grey = pygame.Color(200, 200, 200)
+purple = pygame.Color(128, 0, 128)
 
 # Variables
 #background_image = pygame.image.load('background.png')
@@ -39,31 +41,34 @@ big_font = pygame.font.SysFont("arial", 32)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+# Keeps track of which screen is currently active: "game" or "settings"
+current_screen = "game"
 
 # quit button class
 class Button:
     def __init__(self, text, x, y, width, height, font, bg_color, text_color):
-     self.rect = pygame.Rect(x, y, width, height)
-     self.text = text
-     self.font = font
-     self.bg_color = bg_color
-     self.text_color = text_color
-     self.text_surf = self.font.render(self.text, True, self.text_color)
-     self.text_rect = self.text_surf.get_rect(center=self.rect.center)
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text
+        self.font = font
+        self.bg_color = bg_color
+        self.text_color = text_color
+        self.text_surf = self.font.render(self.text, True, self.text_color)
+        self.text_rect = self.text_surf.get_rect(center=self.rect.center)
 
     def draw(self, surface):
-     pygame.draw.rect(surface, self.bg_color, self.rect)
-     surface.blit(self.text_surf, self.text_rect)
+        pygame.draw.rect(surface, self.bg_color, self.rect)
+        surface.blit(self.text_surf, self.text_rect)
 
     def is_clicked(self, mouse_pos):
-     return self.rect.collidepoint(mouse_pos)
+        return self.rect.collidepoint(mouse_pos)
 
 # Square class stores information about the square like size
 class Square:
     # using init and self.foo means that different instances of the same class can have different values
     def __init__(self, x, y, colour, square_size, x_indent, y_indent):
-        self.x = self.x = x + x_indent + (x // square_size) * 5
-        self.y = y + y_indent + (y // square_size) * 5
+        # Now that coordinates are precomputed correctly, we just assign them
+        self.x = x
+        self.y = y
         self.colour = colour
         self.size = square_size
         self.is_ship = False
@@ -74,7 +79,6 @@ class Square:
     # draws each small square
     def draw(self):
         pygame.draw.rect(screen, self.colour, self.rect, 0)
-        pygame.display.update()
         return()
 
     # checks if given co ordinates are inside the square
@@ -113,7 +117,11 @@ class Board:
         board = np.empty((self.rows, self.cols), dtype=object)
         for row in range(self.rows):
             for col in range(self.cols):
-                board[row, col] = Square(row * self.square_size, col * self.square_size, self.square_colour, self.square_size, self.x_indent, self.y_indent)
+                # Calculate the actual pixel positions using column and row
+                # This ensures consistent spacing with the defined gap
+                x = self.x_indent + col * (self.square_size + gap_size)
+                y = self.y_indent + row * (self.square_size + gap_size)
+                board[row, col] = Square(x, y, self.square_colour, self.square_size, 0, 0)
         return (board)  
 
 
@@ -165,7 +173,6 @@ class Board:
     def change_square_colour(self, row, col, new_colour):
         if row is not None and col is not None:
             self.board[row, col].change_colour(new_colour)
-            pygame.display.update()
         else:
             print ("foo")
         return
@@ -299,13 +306,17 @@ boats_board.draw_ships()
 computer_board.draw()
 boats_board.draw()
 
+# Main Settings button shown in top-right corner during gameplay
+settings_button = Button("Settings", screen_width - 120, 10, 100, 40, font, purple, (255, 255, 255))
 
-# Create Quit Button 
-quit_button = Button("Quit", screen_width - 100, 10, 80, 40, font, red, (255, 255, 255))
-# Create Restart Button
-restart_button = Button("Restart", screen_width - 200, 10, 80, 40, font, green, (255, 255, 255))
- 
- # restarts the game by resetting the boards and placing new ships
+# Buttons that are shown only on the settings screen
+settings_quit_button = Button("Quit", screen_width // 2 - 50, screen_height // 2 - 40, 100, 40, font, red, (255, 255, 255))
+settings_main_menu_button = Button("Main Menu", screen_width // 2 - 50, screen_height // 2 + 110, 100, 40, font, light_grey, (255, 255, 255))
+settings_restart_button = Button("Restart Game", screen_width // 2 - 60, screen_height // 2 + 10, 120, 40, font, green, (255, 255, 255))
+settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2 + 60, 100, 40, font, dark_blue, (255, 255, 255))
+
+# restarts the game by resetting the boards and placing new ships
+
 def restart_game():
     global computer_board, boats_board
     screen.fill(light_blue)
@@ -319,25 +330,56 @@ def restart_game():
     computer_board.draw()
     boats_board.draw()
 
-
 # Means that clicking the X will close the window
 running = True
 while running:
-    for event in pygame.event.get():       
+    for event in pygame.event.get():
+        # drawing based on current screen 
+        if current_screen == "game":
+            screen.fill(light_blue)
+            computer_board.draw()
+            boats_board.draw()
+            settings_button.draw(screen)
+
+        elif current_screen == "settings":
+            screen.fill(light_blue)
+            draw_text("Settings", screen_width // 2, screen_height // 2 - 100, center=True, font_override=big_font)
+            settings_quit_button.draw(screen)
+            settings_restart_button.draw(screen)
+            settings_back_button.draw(screen)
+            settings_main_menu_button.draw(screen)
+
+        pygame.display.update()  
         # if you click on a square, it changes colour to red
         # if you click on a ship, it changes the colour to green
         if event.type == pygame.MOUSEBUTTONDOWN:           
             mouse_x, mouse_y = pygame.mouse.get_pos()
             
-            # Quit button
-            if quit_button.is_clicked((mouse_x, mouse_y)):
-                running = False
-                break
-            # Restart button
-            if restart_button.is_clicked((mouse_x, mouse_y)):
-                restart_game()
-                continue
-                
+            # If the game screen is active, respond to the Settings button
+            if current_screen == "game":
+                if settings_button.is_clicked((mouse_x, mouse_y)):
+                    current_screen = "settings"  # switch to settings screen
+                    continue
+
+            # Handle settings screen button clicks
+            elif current_screen == "settings":
+                if settings_quit_button.is_clicked((mouse_x, mouse_y)):
+                    running = False  # Quit the game
+                    break
+                elif settings_restart_button.is_clicked((mouse_x, mouse_y)):
+                    restart_game()       # Restart game logic
+                    current_screen = "game"  # return to game screen
+                    continue
+                elif settings_back_button.is_clicked((mouse_x, mouse_y)):
+                    current_screen = "game"  # just go back without restarting
+                    continue
+                elif settings_main_menu_button.is_clicked((mouse_x, mouse_y)):
+                    # Go back to the main menu: re-input names and restart game
+                    player_name, enemy_name = input_names()  # Go through name entry again
+                    restart_game()  # Recreate boards and ships
+                    current_screen = "game"  # Return to gameplay screen
+                    continue
+
             row, col = computer_board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
             if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
@@ -356,9 +398,8 @@ while running:
     quit_button.draw(screen)
     restart_button.draw(screen)
     pygame.display.update()
-                                                           
-pygame.quit()
 
+pygame.quit()
 
 
 
