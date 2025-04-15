@@ -41,6 +41,10 @@ big_font = pygame.font.SysFont("arial", 32)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+# Sound 
+droplet_sound = pygame.mixer.Sound("WaterDropletEchoed.wav")
+explosion_sound = pygame.mixer.sound("Ship_Explosion.wav")
+
 # Keeps track of which screen is currently active: "game" or "settings"
 current_screen = "game"
 
@@ -225,9 +229,11 @@ def computers_turn(player_board):
     if(random_square.is_ship):
         random_square.change_colour(red)
         random_square.been_clicked = True
+        explosion_sound.play() # Computer Hit
     else:
         random_square.change_colour(green)
         random_square.been_clicked = True
+        droplet_sound.play() #Computer Miss
     pygame.display.update()
 
 
@@ -386,9 +392,11 @@ while running:
                 if(computer_board.board[row, col].is_ship):
                     computer_board.change_square_colour(row, col, red)
                     computer_board.draw()
+                    explosion_sound.play() # Player Hit Target
                 else:
                     computer_board.change_square_colour(row, col, green)
                     computer_board.draw()
+                    droplet_sound.play() # Player Miss Target
                 # time for the computer to go
                 computers_turn(boats_board)
                 boats_board.draw()
