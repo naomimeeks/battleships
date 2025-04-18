@@ -38,6 +38,7 @@ screen_height = margin * 2 + board_height + 50
 # Fonts
 font = pygame.font.SysFont("arial", 24)
 big_font = pygame.font.SysFont("arial", 32)
+bold_font = pygame.font.SysFont("arial", 28, bold=True)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
@@ -318,7 +319,13 @@ settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2
 # restarts the game by resetting the boards and placing new ships
 
 def restart_game():
+<<<<<<< HEAD
     global computer_board, boats_board
+=======
+    global computer_board, boats_board, start_time
+    # reset the timer when game restarts
+    start_time = time.time()
+>>>>>>> 14eb4d8 (added timer in top left corner)
     screen.fill(light_blue)
     computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
     boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
@@ -329,6 +336,14 @@ def restart_game():
     boats_board.draw_ships()
     computer_board.draw()
     boats_board.draw()
+<<<<<<< HEAD
+=======
+
+
+# record the start time of the game
+start_time = time.time()  
+    
+>>>>>>> 14eb4d8 (added timer in top left corner)
 
 # Means that clicking the X will close the window
 running = True
@@ -340,6 +355,12 @@ while running:
             computer_board.draw()
             boats_board.draw()
             settings_button.draw(screen)
+<<<<<<< HEAD
+=======
+            # calculate and display how long the player has been playing
+            elapsed_time = int(time.time() - start_time)
+            draw_text(f"Time Survived: {elapsed_time}s", 20, 10, color='red', font_override=bold_font)
+>>>>>>> 14eb4d8 (added timer in top left corner)
 
         elif current_screen == "settings":
             screen.fill(light_blue)
@@ -395,8 +416,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+<<<<<<< HEAD
     quit_button.draw(screen)
     restart_button.draw(screen)
+=======
+>>>>>>> 14eb4d8 (added timer in top left corner)
     pygame.display.update()
 
 pygame.quit()
