@@ -215,7 +215,21 @@ class Board:
         col = random.randint(0, self.cols - 1)       
         selected_square = self.board[row, col]       
         return selected_square
-            
+
+class Player:
+    def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent, name, num_ships):
+        self.rows = rows
+        self.cols = cols
+        self.square_colour = square_colour
+        self.square_size = square_size
+        self.x_indent = x_indent
+        self.y_indent = y_indent
+        self.name = name
+        self.num_ships = num_ships
+        self.board = Board(rows,cols, square_colour, square_size, x_indent, y_indent,name)
+        self.board.create()
+        self.board.place_ships(num_ships)
+        self.board.draw()
 
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
@@ -297,15 +311,9 @@ right_board_indent = margin + board_width + board_spacing
 y_indent = margin + 50 
 
 # creating and initialising the computer's (guessing) board and player's board
-computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
-boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
-computer_board.create()
-boats_board.create()
-computer_board.place_ships(3)
-boats_board.place_ships(3)
-boats_board.draw_ships()
-computer_board.draw()
-boats_board.draw()
+computer = Player(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name, 3)
+player = Player(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name, 3)
+
 
 # Main Settings button shown in top-right corner during gameplay
 settings_button = Button("Settings", screen_width - 120, 10, 100, 40, font, purple, (255, 255, 255))
@@ -346,8 +354,8 @@ while running:
         # drawing based on current screen 
         if current_screen == "game":
             screen.fill(light_blue)
-            computer_board.draw()
-            boats_board.draw()
+            computer.board.draw()
+            player.board.draw()
             settings_button.draw(screen)
             # calculate and display how long the player has been playing
             elapsed_time = int(time.time() - start_time)
@@ -391,19 +399,20 @@ while running:
                     restart_game()  # Recreate boards and ships
                     current_screen = "game"  # Return to gameplay screen
                     continue
-
-            row, col = computer_board.get_clicked_position(mouse_x, mouse_y)
+                    
+            row, col = computer.board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
-            if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
-                if(computer_board.board[row, col].is_ship):
-                    computer_board.change_square_colour(row, col, red)
-                    computer_board.draw()
+            if (row is not None and col is not None and computer.board.board[row,col].been_clicked == False):
+                if(computer.board.board[row, col].is_ship):
+                    computer.board.change_square_colour(row, col, red)
+                    computer.board.draw()
                 else:
-                    computer_board.change_square_colour(row, col, green)
-                    computer_board.draw()
+                    computer.board.change_square_colour(row, col, green)
+                    computer.board.draw()
                 # time for the computer to go
-                computers_turn(boats_board)
-                boats_board.draw()
+                computers_turn(player.board)
+                player.board.draw()
+
         if event.type == pygame.QUIT:
             running = False
 
