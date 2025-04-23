@@ -38,6 +38,7 @@ screen_height = margin * 2 + board_height + 50
 # Fonts
 font = pygame.font.SysFont("arial", 24)
 big_font = pygame.font.SysFont("arial", 32)
+bold_font = pygame.font.SysFont("arial", 28, bold=True)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
@@ -319,6 +320,9 @@ settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2
 
 def restart_game():
     global computer_board, boats_board
+    global computer_board, boats_board, start_time
+    # reset the timer when game restarts
+    start_time = time.time()
     screen.fill(light_blue)
     computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
     boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
@@ -330,6 +334,11 @@ def restart_game():
     computer_board.draw()
     boats_board.draw()
 
+
+# record the start time of the game
+start_time = time.time()  
+    
+
 # Means that clicking the X will close the window
 running = True
 while running:
@@ -340,6 +349,9 @@ while running:
             computer_board.draw()
             boats_board.draw()
             settings_button.draw(screen)
+            # calculate and display how long the player has been playing
+            elapsed_time = int(time.time() - start_time)
+            draw_text(f"Time Survived: {elapsed_time}s", 20, 10, color='red', font_override=bold_font)
 
         elif current_screen == "settings":
             screen.fill(light_blue)
