@@ -216,7 +216,6 @@ class Board:
         selected_square = self.board[row, col]       
         return selected_square
 
-
 class Player:
     def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent, name, num_ships):
         self.rows = rows
@@ -231,7 +230,6 @@ class Player:
         self.board.create()
         self.board.place_ships(num_ships)
         self.board.draw()
-
 
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
@@ -401,7 +399,7 @@ while running:
                     restart_game()  # Recreate boards and ships
                     current_screen = "game"  # Return to gameplay screen
                     continue
-
+                    
             row, col = computer.board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
             if (row is not None and col is not None and computer.board.board[row,col].been_clicked == False):
@@ -414,6 +412,7 @@ while running:
                 # time for the computer to go
                 computers_turn(player.board)
                 player.board.draw()
+
         if event.type == pygame.QUIT:
             running = False
 
