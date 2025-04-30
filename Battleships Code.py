@@ -23,7 +23,7 @@ pygame.display.set_caption("Battleships")
 rows = 9
 cols = 9
 square_size = 50
-gap_size = 5
+gap_size = 10
 board_spacing = 100
 margin = 50
 
@@ -36,13 +36,30 @@ screen_width = margin * 2 + board_width * 2 + board_spacing
 screen_height = margin * 2 + board_height + 50
 
 # Fonts
-font = pygame.font.SysFont("arial", 24)
-big_font = pygame.font.SysFont("arial", 32)
+font = pygame.font.Font("IndieFlower-Regular.ttf", 24)
+big_font = pygame.font.Font("IndieFlower-Regular.ttf", 32)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # Keeps track of which screen is currently active: "game" or "settings"
 current_screen = "game"
+
+#GUI images
+background_image = pygame.image.load("background_image.jpg")
+background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
+home_image = pygame.image.load("home_image.jpg")
+home_image = pygame.transform.scale(home_image, (screen_width, screen_height))
+settings_image = pygame.image.load("settings_image.jpg")
+settings_image = pygame.transform.scale(settings_image, (screen_width, screen_height))
+white_image = pygame.image.load("white_image.png")
+white_image = pygame.transform.scale(white_image, (square_size, square_size))
+battleship_ship = pygame.image.load("battleship_ship.jpg")
+battleship_ship = pygame.transform.scale(battleship_ship, (square_size, square_size))
+battleship_broke = pygame.image.load("battleship_broke.jpg")
+battleship_broke = pygame.transform.scale(battleship_broke, (square_size, square_size))
+battleship_back = pygame.image.load("battleship_back.jpg")
+battleship_back = pygame.transform.scale(battleship_back, (square_size, square_size))
+
 
 # quit button class
 class Button:
@@ -65,35 +82,34 @@ class Button:
 # Square class stores information about the square like size
 class Square:
     # using init and self.foo means that different instances of the same class can have different values
-    def __init__(self, x, y, colour, square_size, x_indent, y_indent):
+    def __init__(self, x, y, size):
         # Now that coordinates are precomputed correctly, we just assign them
         self.x = x
         self.y = y
-        self.colour = colour
-        self.size = square_size
+        self.size = size
         self.is_ship = False
         self.been_clicked = False
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
-        
+        self.image = white_image  # default image
 
-    # draws each small square
     def draw(self):
-        pygame.draw.rect(screen, self.colour, self.rect, 0)
-        return()
+        screen.blit(self.image, (self.x, self.y))  # draw current image
 
-    # checks if given co ordinates are inside the square
+    def change_image(self, new_image):
+        self.image = new_image
+
+    def make_ship(self):
+        self.is_ship = True
+
     def is_clicked(self, x, y):
         return self.rect.collidepoint(x, y)
 
-    # changes colour of square
-    def change_colour(self, new_colour):
-        self.colour = new_colour
-        #self.been_clicked = True
-        return()
-
-    # gets colour of square
-    def get_colour(self):
-        return(self.colour)
+    def get_image(self):
+        return self.image
+    
+    # checks if given co ordinates are inside the square
+    def is_clicked(self, x, y):
+        return self.rect.collidepoint(x, y)
 
     # makes square a ship
     def make_ship(self):
@@ -121,7 +137,7 @@ class Board:
                 # This ensures consistent spacing with the defined gap
                 x = self.x_indent + col * (self.square_size + gap_size)
                 y = self.y_indent + row * (self.square_size + gap_size)
-                board[row, col] = Square(x, y, self.square_colour, self.square_size, 0, 0)
+                board[row, col] = Square(x, y, self.square_size)
         return (board)  
 
 
@@ -130,7 +146,7 @@ class Board:
         # draws column labels
         for col in range(self.cols):
             label = chr(ord('A') + col)
-            x = self.x_indent + col * (self.square_size + 5) + self.square_size // 2
+            x = self.x_indent + col * (self.square_size + 10) + self.square_size // 2
             y = self.y_indent - 25
             draw_text(label, x, y, color='black', center=True)
 
@@ -138,7 +154,7 @@ class Board:
         for row in range(self.rows):
             label = str(row + 1)
             x = self.x_indent - 25
-            y = self.y_indent + row * (self.square_size + 5) + self.square_size // 2
+            y = self.y_indent + row * (self.square_size + 10) + self.square_size // 2
             draw_text(label, x, y, color='black', center=True)
 
         # draws squares
@@ -166,13 +182,13 @@ class Board:
         return board_left <= x < board_right and board_top <= y < board_bottom
     
     # Gets a given place in a board's square colour
-    def get_square_colour(self, row, col):
-        return(self.board[row, col].get_colour())
+    def get_square_image(self, row, col):
+        return self.board[row, col].get_image()
         
     # changes colour of square given row and col in array
-    def change_square_colour(self, row, col, new_colour):
+    def change_square_image(self, row, col, new_image):
         if row is not None and col is not None:
-            self.board[row, col].change_colour(new_colour)
+            self.board[row, col].change_image(new_image)
         else:
             print ("foo")
         return
@@ -184,14 +200,14 @@ class Board:
             if orientation == 'horizontal':
                 row = random.randint(0, size - 1)
                 col = random.randint(0, size - ship_size)
-                if all(self.board[row][col+i].get_colour() == dark_blue for i in range(ship_size)):
+                if all(self.board[row][col+i].get_image() == white_image for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row][col+i].make_ship()
                     return
             else:
                 row = random.randint(0, size - ship_size)
                 col = random.randint(0, size - 1)
-                if all(self.board[row+i][col].get_colour() == dark_blue for i in range(ship_size)):
+                if all(self.board[row+i][col].get_image() == white_image for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row+i][col].make_ship()
                     return
@@ -204,8 +220,8 @@ class Board:
     def draw_ships(self):
         for row in range(self.board.shape[0]):
             for col in range(self.board.shape[1]):
-                if(self.board[row,col].is_ship):
-                    self.board[row][col].change_colour(pink)
+                if self.board[row, col].is_ship:
+                    self.board[row, col].change_image(battleship_ship)
         return
 
     def select_random_square(self):
@@ -220,14 +236,15 @@ class Board:
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
     random_square = player_board.select_random_square()
-    while (random_square.been_clicked):
+    while random_square.been_clicked:
         random_square = player_board.select_random_square()
-    if(random_square.is_ship):
-        random_square.change_colour(red)
-        random_square.been_clicked = True
+
+    if random_square.is_ship:
+        random_square.change_image(battleship_broke)
     else:
-        random_square.change_colour(green)
-        random_square.been_clicked = True
+        random_square.change_image(battleship_back)
+
+    random_square.been_clicked = True
     pygame.display.update()
 
 
@@ -247,12 +264,12 @@ def input_names():
     current_input = 1
 
     while input_active:
-        screen.fill(light_blue)
-        draw_text("Enter Player 1 Name:", screen_width // 2, screen_height // 2 - 80, center=True, font_override=big_font)
-        draw_text(player1_name or "_", screen_width // 2, screen_height // 2 - 40, center=True, font_override=big_font)
+        screen.blit(home_image, (0, 0))
+        draw_text("Enter Player 1 Name:", screen_width // 6, screen_height // 2 - 40, center=True, font_override=big_font)
+        draw_text(player1_name or "_", screen_width // 6, screen_height // 2 + 20, center=True, font_override=big_font)
 
-        draw_text("Enter Player 2 Name:", screen_width // 2, screen_height // 2 + 20, center=True, font_override=big_font)
-        draw_text(player2_name or "_", screen_width // 2, screen_height // 2 + 60, center=True, font_override=big_font)
+        draw_text("Enter Player 2 Name:", screen_width // 2 + 475, screen_height // 2 - 40, center=True, font_override=big_font)
+        draw_text(player2_name or "_", screen_width // 2 + 475, screen_height // 2 + 20, center=True, font_override=big_font)
 
         pygame.display.flip()
 
@@ -288,8 +305,6 @@ player_name, enemy_name = input_names()
 # quick random try at putting in a png background
 #background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 #screen.blit(background_image, (-40, -40))
-screen.fill(light_blue)
-pygame.display.update()
 
 left_board_indent = margin
 right_board_indent = margin + board_width + board_spacing
@@ -319,7 +334,7 @@ settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2
 
 def restart_game():
     global computer_board, boats_board
-    screen.fill(light_blue)
+    screen.blit(background_image, (0, 0))
     computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
     boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
     computer_board.create()
@@ -336,13 +351,13 @@ while running:
     for event in pygame.event.get():
         # drawing based on current screen 
         if current_screen == "game":
-            screen.fill(light_blue)
+            screen.blit(background_image, (0, 0))
             computer_board.draw()
             boats_board.draw()
             settings_button.draw(screen)
 
         elif current_screen == "settings":
-            screen.fill(light_blue)
+            screen.blit(settings_image, (0, 0))
             draw_text("Settings", screen_width // 2, screen_height // 2 - 100, center=True, font_override=big_font)
             settings_quit_button.draw(screen)
             settings_restart_button.draw(screen)
@@ -384,11 +399,10 @@ while running:
             # checks if click is on the board
             if (row is not None and col is not None and computer_board.board[row,col].been_clicked == False):
                 if(computer_board.board[row, col].is_ship):
-                    computer_board.change_square_colour(row, col, red)
-                    computer_board.draw()
+                    computer_board.change_square_image(row, col, battleship_broke)
                 else:
-                    computer_board.change_square_colour(row, col, green)
-                    computer_board.draw()
+                    computer_board.change_square_image(row, col, battleship_back)
+                    
                 # time for the computer to go
                 computers_turn(boats_board)
                 boats_board.draw()
@@ -398,10 +412,6 @@ while running:
     pygame.display.update()
 
 pygame.quit()
-
-
-
-
 
 
 
