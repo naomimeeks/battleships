@@ -42,6 +42,12 @@ bold_font = pygame.font.SysFont("arial", 28, bold=True)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+# Sound 
+droplet_sound = pygame.mixer.Sound("WaterDropletEchoed.wav")
+explosion_sound = pygame.mixer.Sound("Ship_Explosion.wav")
+defeat_sound = pygame.mixer.Sound("Cartoon_Failure_Trumpet.wav")
+victory_sound = pygame.mixer.Sound("Cartoon_Success_Trumpet.wav")
+
 # Keeps track of which screen is currently active: "game" or "settings"
 current_screen = "game"
 
@@ -184,15 +190,15 @@ class Board:
             orientation = random.choice(['horizontal', 'vertical'])
             if orientation == 'horizontal':
                 row = random.randint(0, size - 1)
-                col = random.randint(0, size - ship_size)
-                if all(self.board[row][col+i].get_colour() == dark_blue for i in range(ship_size)):
+                col = random.randint(0, size - ship_size - 1)
+                if all( not self.board[row][col+i].is_ship for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row][col+i].make_ship()
                     return
             else:
-                row = random.randint(0, size - ship_size)
+                row = random.randint(0, size - ship_size -1)
                 col = random.randint(0, size - 1)
-                if all(self.board[row+i][col].get_colour() == dark_blue for i in range(ship_size)):
+                if all(not self.board[row+i][col].is_ship for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row+i][col].make_ship()
                     return
@@ -234,15 +240,29 @@ class Player:
 ###########################################################################################
 # computer chooses a random square and it changes to a different colour on the board
 def computers_turn(player_board):
+    global player_lives
+    global current_screen
     random_square = player_board.select_random_square()
     while (random_square.been_clicked):
         random_square = player_board.select_random_square()
     if(random_square.is_ship):
         random_square.change_colour(red)
         random_square.been_clicked = True
+        explosion_sound.play() # Computer Hit
+        player_lives = player_lives - 1
+        if player_lives == 0:
+            screen.fill(light_blue)
+            print ("{enemy_name has won")
+            draw_text(f"{enemy_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
+            pygame.display.update()
+            defeat_sound.play()
+            time.sleep(3)
+            current_screen = "settings"
+            return
     else:
         random_square.change_colour(green)
         random_square.been_clicked = True
+        droplet_sound.play() #Computer Miss
     pygame.display.update()
 
 
@@ -299,6 +319,7 @@ def input_names():
 # ___ getting GUI to run ___ #
 
 player_name, enemy_name = input_names()
+player_lives, enemy_lives = 14, 14
 
 # quick random try at putting in a png background
 #background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
@@ -327,10 +348,10 @@ settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2
 # restarts the game by resetting the boards and placing new ships
 
 def restart_game():
-    global computer_board, boats_board
-    global computer_board, boats_board, start_time
-    # reset the timer when game restarts
-    start_time = time.time()
+
+    global computer_board, boats_board, player_lives, enemy_lives
+    player_lives, enemy_lives = 14, 14
+
     screen.fill(light_blue)
     computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
     boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
@@ -354,8 +375,12 @@ while running:
         # drawing based on current screen 
         if current_screen == "game":
             screen.fill(light_blue)
-            computer.board.draw()
-            player.board.draw()
+
+            draw_text(f"{enemy_name} - Lives: {enemy_lives}", left_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
+            draw_text(f"{player_name} - Lives: {player_lives}", right_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
+            computer_board.draw()
+            boats_board.draw()
+
             settings_button.draw(screen)
             # calculate and display how long the player has been playing
             elapsed_time = int(time.time() - start_time)
@@ -402,14 +427,31 @@ while running:
                     
             row, col = computer.board.get_clicked_position(mouse_x, mouse_y)
             # checks if click is on the board
+            
             if (row is not None and col is not None and computer.board.board[row,col].been_clicked == False):
                 if(computer.board.board[row, col].is_ship):
                     computer.board.change_square_colour(row, col, red)
                     computer.board.draw()
+                    explosion_sound.play() # Player Hit Target
+                    enemy_lives = enemy_lives - 1
+                    if enemy_lives == 0:
+                        screen.fill(light_blue)
+                        print (f"player_name has won")
+                        draw_text(f"{player_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
+                        pygame.display.update()
+                        victory_sound.play()
+                        time.sleep(3)
+                        current_screen = "settings"
+                        continue
                 else:
                     computer.board.change_square_colour(row, col, green)
                     computer.board.draw()
+                    droplet_sound.play() # Player Miss Target
+                pygame.display.update()
                 # time for the computer to go
+
+                time.sleep(1.5) #delay between each players turn
+
                 computers_turn(player.board)
                 player.board.draw()
 
@@ -419,10 +461,3 @@ while running:
     pygame.display.update()
 
 pygame.quit()
-
-
-
-
-
-
-
