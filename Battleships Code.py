@@ -118,6 +118,8 @@ class Board:
         self.y_indent = y_indent
         self.board = self.create()
         self.name = name
+        self.ships = []
+        self.sunken_ships = 0
 
     # creates a 2D array of squares
     def create(self):
@@ -188,12 +190,15 @@ class Board:
         size = self.board.shape[0]
         while True:
             orientation = random.choice(['horizontal', 'vertical'])
+            ship_squares = []
             if orientation == 'horizontal':
                 row = random.randint(0, size - 1)
                 col = random.randint(0, size - ship_size - 1)
                 if all( not self.board[row][col+i].is_ship for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row][col+i].make_ship()
+                        ship_squares.append(self.board[row][col+i])
+                    self.ships.append(ship_squares)
                     return
             else:
                 row = random.randint(0, size - ship_size -1)
@@ -201,6 +206,8 @@ class Board:
                 if all(not self.board[row+i][col].is_ship for i in range(ship_size)):
                     for i in range(ship_size):
                         self.board[row+i][col].make_ship()
+                        ship_squares.append(self.board[row+i][col])
+                    self.ships.append(ship_squares)
                     return
                 
     def place_ships(self, num_ships):
@@ -221,6 +228,16 @@ class Board:
         col = random.randint(0, self.cols - 1)       
         selected_square = self.board[row, col]       
         return selected_square
+
+    def check_ship_sunk(self, row, col):
+        ###Check if the hit square completes a ship sinking###
+        for ship in self.ships:
+            for square in ship:
+                if square == self.board[row][col]:
+                    # Check if all squares in this ship have been hit
+                    if all(s.been_clicked for s in ship):
+                        return True
+        return False
 
 class Player:
     def __init__(self, rows, cols, square_colour, square_size, x_indent, y_indent, name, num_ships):
@@ -245,20 +262,29 @@ def computers_turn(player_board):
     random_square = player_board.select_random_square()
     while (random_square.been_clicked):
         random_square = player_board.select_random_square()
+    random_square.been_clicked = True
     if(random_square.is_ship):
         random_square.change_colour(red)
         random_square.been_clicked = True
         explosion_sound.play() # Computer Hit
-        player_lives = player_lives - 1
-        if player_lives == 0:
-            screen.fill(light_blue)
-            print ("{enemy_name has won")
-            draw_text(f"{enemy_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
-            pygame.display.update()
-            defeat_sound.play()
-            time.sleep(3)
-            current_screen = "settings"
-            return
+        player_points += 3
+        row, col = None, None
+        for r in range(player_board.rows):
+            for c in range(player_board.cols):
+                if player_board.board[r,c] == random_square:
+                    row, col = r, c
+                    break
+        if row is not None and col is not None and player_board.check_ship_sunk(row, col):
+            player_lives -= 1
+            if player_lives == 0:
+                screen.fill(light_blue)
+                print ("{enemy_name has won")
+                draw_text(f"{enemy_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
+                pygame.display.update()
+                defeat_sound.play()
+                time.sleep(3)
+                current_screen = "settings"
+                return
     else:
         random_square.change_colour(green)
         random_square.been_clicked = True
@@ -319,7 +345,8 @@ def input_names():
 # ___ getting GUI to run ___ #
 
 player_name, enemy_name = input_names()
-player_lives, enemy_lives = 14, 14
+player_lives, enemy_lives = 4, 4
+player_points, enemy_points = 0,0
 
 # quick random try at putting in a png background
 #background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
@@ -334,6 +361,8 @@ y_indent = margin + 50
 # creating and initialising the computer's (guessing) board and player's board
 computer = Player(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name, 3)
 player = Player(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name, 3)
+computer_board = computer.board
+boats_board = player.board
 
 
 # Main Settings button shown in top-right corner during gameplay
@@ -350,8 +379,8 @@ settings_back_button = Button("Back", screen_width // 2 - 50, screen_height // 2
 def restart_game():
 
     global computer_board, boats_board, player_lives, enemy_lives
-    player_lives, enemy_lives = 14, 14
-
+    player_lives, enemy_lives = 4, 4
+    player_points, enemy_points = 0,0
     screen.fill(light_blue)
     computer_board = Board(rows, cols, dark_blue, square_size, left_board_indent, y_indent, enemy_name)
     boats_board = Board(rows, cols, dark_blue, square_size, right_board_indent, y_indent, player_name)
@@ -376,15 +405,15 @@ while running:
         if current_screen == "game":
             screen.fill(light_blue)
 
-            draw_text(f"{enemy_name} - Lives: {enemy_lives}", left_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
-            draw_text(f"{player_name} - Lives: {player_lives}", right_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
+            draw_text(f"{enemy_name} - Lives: {enemy_lives} | Points: {enemy_points}", left_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
+            draw_text(f"{player_name} - Lives: {player_lives} | Points: {player_points}", right_board_indent + board_width // 2, 27, margin, center = True, font_override = big_font)
             computer_board.draw()
             boats_board.draw()
 
             settings_button.draw(screen)
             # calculate and display how long the player has been playing
             elapsed_time = int(time.time() - start_time)
-            draw_text(f"Time Survived: {elapsed_time}s", 20, 10, color='red', font_override=bold_font)
+            draw_text(f"Time Survived: {elapsed_time}s", 20, screen_height -35, color='red', font_override=bold_font)
 
         elif current_screen == "settings":
             screen.fill(light_blue)
@@ -429,20 +458,23 @@ while running:
             # checks if click is on the board
             
             if (row is not None and col is not None and computer.board.board[row,col].been_clicked == False):
+                computer.board.board[row,col].been_clicked = True
                 if(computer.board.board[row, col].is_ship):
                     computer.board.change_square_colour(row, col, red)
                     computer.board.draw()
                     explosion_sound.play() # Player Hit Target
-                    enemy_lives = enemy_lives - 1
-                    if enemy_lives == 0:
-                        screen.fill(light_blue)
-                        print (f"player_name has won")
-                        draw_text(f"{player_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
-                        pygame.display.update()
-                        victory_sound.play()
-                        time.sleep(3)
-                        current_screen = "settings"
-                        continue
+                    enemy_points += 3
+                    if computer.board.check_ship_sunk(row, col):
+                        enemy_lives -= 1
+                        if enemy_lives == 0:
+                            screen.fill(light_blue)
+                            print (f"player_name has won")
+                            draw_text(f"{player_name} Wins!", screen_width // 2, screen_height // 2, center=True, font_override=big_font)
+                            pygame.display.update()
+                            victory_sound.play()
+                            time.sleep(3)
+                            current_screen = "settings"
+                            continue
                 else:
                     computer.board.change_square_colour(row, col, green)
                     computer.board.draw()
