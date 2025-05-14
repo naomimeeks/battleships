@@ -226,9 +226,11 @@ vs_computer = False
 turn = 0
 winner = None
 in_menu = True
+
 sound_enabled = True
 game_state = "intro"  # intro → menu → game → winner → settings
 game_state = "intro"  # Tracks whether we're on the intro, menu, game, or winner screen
+
 start_time = time.time()
 
 running = True
@@ -256,7 +258,55 @@ while running:
         continue
 
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for i, btn in enumerate(menu_buttons):
+                    if btn.is_clicked(pos):
+                        vs_computer = (i == 0)
+                        result = get_player_names(1 if vs_computer else 2)
+                        if result is None:
+                            break
+                        player_names = result
+                        if vs_computer:
+                            player_names.append("Computer")
+                        boards = []
+                        player_scores = [0 for _ in player_names]
+                        for j, name in enumerate(player_names):
+                            x, y = get_board_position(j)
+                            boards.append(Board(x, y, name))
+                        in_menu = False
+                        winner = None
+                        turn = 0
+                        start_time = time.time()
 
+    elif winner:
+        screen.fill(light_blue)
+        draw_text_center(f"{winner} Wins!", screen, screen_height // 2 - 30)
+        main_menu_button.draw(screen)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if main_menu_button.is_clicked(pygame.mouse.get_pos()):
+                    in_menu = True
+                    winner = None
+
+    else:
+        for i, board in enumerate(boards):
+            board.draw(screen, reveal_ships=(i == turn), highlight=(i == turn))
+
+        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 60)
+        score_text = " | ".join([f"{name}: {score}" for name, score in zip(player_names, player_scores)])
+        draw_text_center(score_text, screen, 20)
+        elapsed_time = int(time.time() - start_time)
+        draw_text_center(f"Time: {elapsed_time}s", screen, screen_height - 30)
+        back_button.draw(screen)
+        pygame.display.flip()
 
     if game_state == "intro":
         screen.fill(light_blue)
@@ -265,10 +315,12 @@ while running:
             button.draw(screen)
         pygame.display.flip()
 
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+
                 pos = pygame.mouse.get_pos()
                 if intro_buttons[0].is_clicked(pos):  # Play
                     game_state = "menu" 
@@ -383,5 +435,6 @@ while running:
                             else:
                                 turn = (turn + 1) % len(player_names)
                             break
+
 
 pygame.quit()
