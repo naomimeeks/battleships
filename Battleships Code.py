@@ -1,3 +1,4 @@
+
 # Battleship Game - Full Version with Sound, Scores, and Time (Game Logic Restored)
 
 import pygame
@@ -296,7 +297,9 @@ while running:
                     in_menu = True
                     winner = None
 
-    else:
+    elif game_state == "game":
+        screen.fill(light_blue)
+
         for i, board in enumerate(boards):
             board.draw(screen, reveal_ships=(i == turn), highlight=(i == turn))
 
@@ -334,18 +337,24 @@ while running:
 
  
 
+
+ 
+
     if game_state == "menu":
         screen.fill(light_blue)
         draw_text_center("Choose Game Mode", screen, 40)
         for button in menu_buttons:
             button.draw(screen)
         menu_back_button.draw(screen)
+menu_button.draw(screen)
+
         pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(menu_buttons):
                     if btn.is_clicked(pos):
