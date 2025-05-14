@@ -156,6 +156,23 @@ def draw_text_center(text, screen, y):
     rect = rendered.get_rect(center=(screen_width // 2, y))
     screen.blit(rendered, rect)
 
+
+# Intro screen buttons
+intro_buttons = [
+    Button("Play", screen_width // 2 - 90, 200, 180, 60),
+    Button("Settings", screen_width // 2 - 90, 280, 180, 60),
+    Button("Quit", screen_width // 2 - 90, 360, 180, 60)  
+]
+
+# Setting button on intro screen
+settings_buttons = [
+    Button("Toggle Sound", screen_width // 2 - 90, 200, 180, 60),
+    Button("Theme: Light", screen_width // 2 - 90, 280, 180, 60),
+    Button("Back", screen_width - 110, 10, 100, 40)
+]
+
+menu_back_button = Button("Back", screen_width - 110, 10, 100, 40)
+
 # --- Menu and Game Loop ---
 menu_buttons = [
     Button("1 vs Computer", screen_width//2 - 200, 100, 180, 100),
@@ -209,17 +226,37 @@ vs_computer = False
 turn = 0
 winner = None
 in_menu = True
+
+sound_enabled = True
+game_state = "intro"  # intro → menu → game → winner → settings
+game_state = "intro"  # Tracks whether we're on the intro, menu, game, or winner screen
+
 start_time = time.time()
 
 running = True
 while running:
-    screen.fill(light_blue)
+    if game_state == "settings":
+        screen.fill(light_blue)
+        draw_text_center("Settings", screen, 60)
 
-    if in_menu:
-        draw_text_center("Choose Game Mode", screen, 40)
-        for button in menu_buttons:
+        for button in settings_buttons:
             button.draw(screen)
         pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if settings_buttons[0].is_clicked(pos):  # Toggle Sound
+                    sound_enabled = not sound_enabled
+                    print("Sound:", "On" if sound_enabled else "Off")
+                elif settings_buttons[1].is_clicked(pos):  # Theme (placeholder)
+                    print("Theme button clicked (placeholder)")
+                elif settings_buttons[2].is_clicked(pos):  # Back
+                    game_state = "intro"
+        continue
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -271,6 +308,95 @@ while running:
         back_button.draw(screen)
         pygame.display.flip()
 
+    if game_state == "intro":
+        screen.fill(light_blue)
+        draw_text_center("BATTLESHIPS", screen, 100)
+        for button in intro_buttons:
+            button.draw(screen)
+        pygame.display.flip()
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+
+                pos = pygame.mouse.get_pos()
+                if intro_buttons[0].is_clicked(pos):  # Play
+                    game_state = "menu" 
+                    in_menu = True
+                elif intro_buttons[1].is_clicked(pos):  # Settings
+                    game_state = "settings"
+                elif intro_buttons[2].is_clicked(pos):  # Quit
+                    running = False
+        continue
+
+
+ 
+
+    if game_state == "menu":
+        screen.fill(light_blue)
+        draw_text_center("Choose Game Mode", screen, 40)
+        for button in menu_buttons:
+            button.draw(screen)
+        menu_back_button.draw(screen)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for i, btn in enumerate(menu_buttons):
+                    if btn.is_clicked(pos):
+                        vs_computer = (i == 0)
+                        result = get_player_names(1 if vs_computer else 2)
+                        if result is None:
+                            break
+                        player_names = result
+                        if vs_computer:
+                            player_names.append("Computer")
+                        boards = []
+                        player_scores = [0 for _ in player_names]
+                        for j, name in enumerate(player_names):
+                            x, y = get_board_position(j)
+                            boards.append(Board(x, y, name))
+                        in_menu = False
+                        winner = None
+                        turn = 0
+                        start_time = time.time()
+                        game_state = "game"
+            if menu_back_button.is_clicked(pos):
+                game_state = "intro"
+
+    elif winner:
+        screen.fill(light_blue)
+        draw_text_center(f"{winner} Wins!", screen, screen_height // 2 - 30)
+        main_menu_button.draw(screen)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if main_menu_button.is_clicked(pygame.mouse.get_pos()):
+                    in_menu = True
+                    winner = None
+                    game_state = "intro"
+     
+    else:
+        screen.fill(light_blue)
+        for i, board in enumerate(boards):
+            board.draw(screen, reveal_ships=(i == turn), highlight=(i == turn))
+
+        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 60)
+        score_text = " | ".join([f"{name}: {score}" for name, score in zip(player_names, player_scores)])
+        draw_text_center(score_text, screen, 20)
+        elapsed_time = int(time.time() - start_time)
+        draw_text_center(f"Time: {elapsed_time}s", screen, screen_height - 30)
+        back_button.draw(screen)
+        pygame.display.flip()
+
         if vs_computer and turn == 1:
             pygame.time.delay(500)
             hit = boards[0].click_random()
@@ -283,7 +409,7 @@ while running:
                 winner = player_names[1]
                 victory_sound.play()
             else:
-                turn = 0
+                turn = 0   
             continue
 
         for event in pygame.event.get():
@@ -309,5 +435,6 @@ while running:
                             else:
                                 turn = (turn + 1) % len(player_names)
                             break
+
 
 pygame.quit()
