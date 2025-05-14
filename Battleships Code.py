@@ -1,4 +1,3 @@
-
 # Battleship Game - Full Version with Sound, Scores, and Time (Game Logic Restored)
 
 import pygame
@@ -42,6 +41,9 @@ screen_height = 2 * margin + board_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Multiplayer Battleships")
 
+# Lives
+heart_img = pygame.image.load("Red_Heart.png").convert_alpha()
+heart_img = pygame.transform.scale(heart_img, (20, 20))
 # --- Classes ---
 class Button:
     def __init__(self, text, x, y, width, height):
@@ -100,6 +102,16 @@ class Board:
 
         text = font.render(self.name, True, black)
         screen.blit(text, (self.x_indent + board_width//2 - text.get_width()//2, self.y_indent - 30))
+
+        for i in range(3):
+            heart_y = self.y_indent + i * 30 + 20
+
+            if self.name == "Player 1":
+                heart_x = self.x_indent - 70
+            else:
+                heart_x = self.x_indent + board_width + 10
+
+            screen.blit(heart_img, (heart_x, heart_y))
 
         if highlight:
             outline_rect = pygame.Rect(
@@ -172,14 +184,14 @@ settings_buttons = [
     Button("Back", screen_width - 110, 10, 100, 40)
 ]
 
-menu_back_button = Button("Back", screen_width - 110, 10, 100, 40)
+menu_back_button = Button("Back", screen_width - 120, 5, 100, 40)
 
 # --- Menu and Game Loop ---
 menu_buttons = [
     Button("1 vs Computer", screen_width//2 - 200, 100, 180, 100),
     Button("1v1", screen_width//2 + 20, 100, 180, 100)
 ]
-back_button = Button("Back", screen_width - 110, 10, 100, 40)
+back_button = Button("Back", screen_width - 120, 5, 100, 40)
 main_menu_button = Button("Main Menu", screen_width // 2 - 75, screen_height // 2 + 60, 150, 40)
 
 def get_player_names(n):
@@ -299,17 +311,18 @@ while running:
 
     elif game_state == "game":
         screen.fill(light_blue)
-
         for i, board in enumerate(boards):
             board.draw(screen, reveal_ships=(i == turn), highlight=(i == turn))
 
-        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 60)
+        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 30)
         score_text = " | ".join([f"{name}: {score}" for name, score in zip(player_names, player_scores)])
         draw_text_center(score_text, screen, 20)
         elapsed_time = int(time.time() - start_time)
-        draw_text_center(f"Time: {elapsed_time}s", screen, screen_height - 30)
+        time_text = font.render(f"Time: {elapsed_time}s", True, black)
+        screen.blit(time_text, (screen_width - time_text.get_width() - 10, screen_height - time_text.get_height() - 10))
         back_button.draw(screen)
         pygame.display.flip()
+
 
     if game_state == "intro":
         screen.fill(light_blue)
@@ -337,24 +350,18 @@ while running:
 
  
 
-
- 
-
     if game_state == "menu":
         screen.fill(light_blue)
         draw_text_center("Choose Game Mode", screen, 40)
         for button in menu_buttons:
             button.draw(screen)
         menu_back_button.draw(screen)
-menu_button.draw(screen)
-
         pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-
                 pos = pygame.mouse.get_pos()
                 for i, btn in enumerate(menu_buttons):
                     if btn.is_clicked(pos):
@@ -398,11 +405,13 @@ menu_button.draw(screen)
         for i, board in enumerate(boards):
             board.draw(screen, reveal_ships=(i == turn), highlight=(i == turn))
 
-        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 60)
+        draw_text_center(f"{player_names[turn]}'s Turn", screen, screen_height - 30)
         score_text = " | ".join([f"{name}: {score}" for name, score in zip(player_names, player_scores)])
         draw_text_center(score_text, screen, 20)
         elapsed_time = int(time.time() - start_time)
-        draw_text_center(f"Time: {elapsed_time}s", screen, screen_height - 30)
+        time_text = font.render(f"Time: {elapsed_time}s", True, black)
+        screen.blit(time_text, (screen_width - time_text.get_width() - 10, screen_height - time_text.get_height() - 10))
+
         back_button.draw(screen)
         pygame.display.flip()
 
