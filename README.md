@@ -13,11 +13,24 @@ Sink all your opponents ships before they sink yours
  - Players take turns clicking on the opponent's grid
  - Hits are marked as this--- misses are marked as this--- and play this sound etc
  - The first player to sink all the opponents ships first wins... also talk about scoring here
+   
 ## App controls and walkthrough
+**Controls**  
+**Mouser clicks-** used to place ships, selecting squares of the othe player's board, click through the menus  
+**Keyboard-** used to input player names, (if selected) to select squares to sink ships and place ships  
+  
+**Walkthrough**
+1. Launch game
+2. 
+
 The start button takes you to the initial screen...Once start is pressed  
 The settings button takes you to where you can select different difficulties and board sizes, also different GUI designs  
-Then there's multiplayer modes or 1v1 or vs computer
+Then there's multiplayer modes or 1v1 or vs computer  
+
 ## Updates
 From the initial version, the 
+
 ## GUI design
+golden rules of GUI etc etc
+
 ## AI tools
