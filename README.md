@@ -22,12 +22,48 @@ Sink all your opponents ships before they sink yours
 **Keyboard-** used to input player names, (if selected) to select squares to sink ships and place ships  
   
 **Walkthrough**
-1. Launch game
-2. 
+1. **Launch the game**  
+   The game opens to a hand-drawn intro screen with three options:  
+    - **Play**: starts a new game  
+    - **Settings**: opens the settings menu  
+    - **Quit**: exits the game  
 
-The start button takes you to the initial screen...Once start is pressed  
-The settings button takes you to where you can select different difficulties and board sizes, also different GUI designs  
-Then there's multiplayer modes or 1v1 or vs computer  
+2. **Settings Menu** (optional)  
+   Selecting **Settings** opens a simple screen with:  
+    - **Toggle Sound**: turns game audio on or off  
+    - **Theme: Light**: placeholder for future GUI customization  
+   The **Back** button in the top right returns you to the intro screen  
+
+3. **Select Game Mode**  
+   Clicking **Play** brings up the **Game Mode Selection** screen, with four options:  
+    - **1 vs Computer**  
+    - **1v1**  
+    - **1v1v1**  
+    - **1v1v1v1**  
+   Player names are automatically generated (e.g., "Player 1") and AI is assigned if "1 vs Computer" is selected  
+
+4. **Gameplay Screen**  
+   - Each player is shown a square grid with ships randomly placed  
+   - The number of boards and layout adjusts dynamically to fit all players  
+   - The current player’s board is highlighted in yellow  
+   - **Click** on another player’s grid to attack a square  
+   - If the square contains a ship:  
+     - A **broken ship image** is displayed  
+     - An **explosion sound** is played  
+   - If the square is empty:  
+     - A **water splash image** is shown  
+     - A **splash sound** is played  
+   - Each player has **3 lives**, displayed as heart icons beside their board  
+
+5. **Turns and Elimination**  
+   - Turns rotate automatically  
+   - Eliminated players (all ships destroyed) are skipped  
+   - The game continues until one player remains  
+
+6. **Winner Screen**  
+   When a player wins, a final screen appears showing:  
+    - The winner’s name  
+    - A **Main Menu** button to return to the intro screen  
 
 ## Updates
 Since the initial version of the project, which was a text-based terminal game, the application has undergone a complete transformation.  
