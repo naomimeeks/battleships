@@ -1,8 +1,9 @@
 # Battleships Project
 ## Guidance on how to play the game
 **Objective**  
-Need to talk to Iyanu about how the points system works and write this here  
-Sink all your opponents ships before they sink yours  
+The goal of the game is to sink all of your opponents’ ships before they sink yours.  
+Each player is given a hidden fleet of ships placed randomly on their grid. By taking turns to attack tiles on enemy boards, players must locate and destroy all ship segments.  
+The last remaining player with any ships left on their board is declared the winner.
   
 **Game modes**  
 **1vs Computer-** individual player battles an AI opponent with different difficulties, easy, medium and hard  
