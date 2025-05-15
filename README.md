@@ -33,14 +33,14 @@ Then there's multiplayer modes or 1v1 or vs computer
 Since the initial version of the project, which was a text-based terminal game, the application has undergone a complete transformation.  
 Below is a summary of the key changes and enhancements made:
 
-### **From Text to GUI**
+**From Text to GUI**
 
  - Replaced command-line interface with a **fully interactive graphical UI** using Pygame  
  - Added **mouse-based controls** instead of typed input  
  - Introduced **custom images** for ships, water, hits, and background  
  - Included **sound effects** for hits, misses, victory, and defeat  
 
-### **Gameplay Enhancements**
+**Gameplay Enhancements**
 
  - Added support for multiplayer:  
    - **1v1**  
@@ -50,20 +50,20 @@ Below is a summary of the key changes and enhancements made:
  - Added **1 vs Computer** mode with **Easy AI**  
  - Boards **dynamically reposition** based on the number of players  
 
-### **Logic and Mechanics Improvements**
+**Logic and Mechanics Improvements**
 
  - Removed manual input errors by using **grid-based interaction**  
  - Improved **turn handling** — automatically skips eliminated players  
  - Integrated a **winner detection screen** with visual and audio feedback  
 
-### **UI & Settings**
+**UI & Settings**
 
  - Created **intro and settings menus**  
  - Players can **toggle sound** on/off  
  - Placeholder added for **theme switching**  
  - Players are now **automatically named** (e.g., "Player 1") to speed up setup  
 
-### **Visual Polish**
+**Visual Polish**
 
  - Added **themed grid backdrops** depending on the number of players  
  - Lives are represented using **heart icons** beside each board  
