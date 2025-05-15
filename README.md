@@ -28,18 +28,19 @@ The settings button takes you to where you can select different difficulties and
 Then there's multiplayer modes or 1v1 or vs computer  
 
 ## Updates
-ince the initial version of the project, which was a **text-based terminal game**, the application has undergone a complete transformation. Below is a summary of the key changes and enhancements made:
+Since the initial version of the project, which was a text-based terminal game, the application has undergone a complete transformation.  
+Below is a summary of the key changes and enhancements made:
 **From Text to GUI**
-- Replaced command-line interface with a **fully interactive graphical UI** using Pygame  
-- Added **mouse-based controls** instead of typed input  
-- Introduced **custom images** for ships, water, hits, and background  
-- Included **sound effects** for hits, misses, victory, and defeat  
+ - Replaced command-line interface with a **fully interactive graphical UI** using Pygame
+ - Added **mouse-based controls** instead of typed input
+ - Introduced **custom images** for ships, water, hits, and background
+ - Included **sound effects** for hits, misses, victory, and defeat  
 **Gameplay Enhancements**
-- Added support for **multiplayer**:  
-  - **1v1**  
-  - **1v1v1**  
-  - **1v1v1v1**  
-- Added **1 vs Computer** mode with **Easy AI**  
+ - Added support for multiplayer:
+ -   **1v1**
+ - **1v1v1**
+ - **1v1v1v1**
+ - Added **1 vs Computer** mode with **Easy AI**  
 - Boards **dynamically reposition** based on the number of players  
 **Logic and Mechanics Improvements**
 - Removed manual input errors by using **grid-based interaction**  
