@@ -36,25 +36,30 @@ Below is a summary of the key changes and enhancements made:
  - Introduced **custom images** for ships, water, hits, and background
  - Included **sound effects** for hits, misses, victory, and defeat  
 **Gameplay Enhancements**
- * Added support for multiplayer:
+  
+ - Added support for multiplayer:
  - **1v1**
  - **1v1v1**
  - **1v1v1v1**
- - Added **1 vs Computer** mode with **Easy AI**  
-- Boards **dynamically reposition** based on the number of players  
+     
+ - Added **1 vs Computer** mode with **Easy AI**
+ - Boards **dynamically reposition** based on the number of players
+  
 **Logic and Mechanics Improvements**
-- Removed manual input errors by using **grid-based interaction**  
-- Improved **turn handling** — automatically skips eliminated players  
-- Integrated a **winner detection screen** with visual and audio feedback  
+ - Removed manual input errors by using **grid-based interaction**
+ - Improved **turn handling** — automatically skips eliminated players
+ - Integrated a **winner detection screen** with visual and audio feedback
+  
 **UI & Settings**
-- Created **intro and settings menus**  
-- Players can **toggle sound** on/off  
-- Placeholder added for **theme switching**  
-- Players are now **automatically named** (e.g., "Player 1") to speed up setup  
+ - Created **intro and settings menus**
+ - Players can **toggle sound** on/off
+ - Placeholder added for **theme switching**
+ - Players are now **automatically named** (e.g., "Player 1") to speed up setup
+   
 **Visual Polish**
-- Added **themed grid backdrops** depending on the number of players  
-- Lives are represented using **heart icons** beside each board  
-- Ships and attacks use **high-quality sprite images**  
+ - Added **themed grid backdrops** depending on the number of players
+ - Lives are represented using **heart icons** beside each board
+ - Ships and attacks use **high-quality sprite images**  
 
 ## GUI design
 golden rules of GUI etc etc
