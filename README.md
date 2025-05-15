@@ -9,12 +9,15 @@ Sink all your opponents ships before they sink yours
 **Multiplayer-** two or more (write how many at the end here) players battle at the same computer  
   
 **Rules**    
- - Each player has a square grid (size depending on player's choice at the start of the game) of ships with varying sizes  
- - Players take turns clicking on the opponent's grid  
- - Hits are marked with a broken ship image and explosion sound  
- - Misses are marked with a splash image and water sound  
- - The first player to sink all the opponent's ships wins  
- - Each successful hit scores **3 points**
+ - Each player is given a square grid (9x9) with **3 randomly placed ships** of different sizes (2, 3, and 4 tiles)  
+ - Players take turns clicking on their opponents' boards to guess where ships are hidden  
+ - A **hit** is shown with a **broken ship image** and plays an **explosion sound**  
+ - A **miss** is shown with a **splash image** and plays a **water droplet sound**  
+ - Each player has **3 lives**, visually represented with **heart icons** next to their board  
+ - When all of a player’s ships are hit, they are eliminated from the game  
+ - Turns automatically skip players who have been eliminated  
+ - The last remaining player with ships on the board is declared the **winner**  
+ - In previous versions, scoring awarded **3 points per hit**, but this version uses visual indicators and player elimination instead of numerical scores  
    
 ## App controls and walkthrough
 **Controls**  
