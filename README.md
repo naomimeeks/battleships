@@ -36,8 +36,8 @@ Below is a summary of the key changes and enhancements made:
  - Introduced **custom images** for ships, water, hits, and background
  - Included **sound effects** for hits, misses, victory, and defeat  
 **Gameplay Enhancements**
- - Added support for multiplayer:
- -   **1v1**
+ * Added support for multiplayer:
+ - **1v1**
  - **1v1v1**
  - **1v1v1v1**
  - Added **1 vs Computer** mode with **Easy AI**  
