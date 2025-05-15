@@ -70,6 +70,29 @@ Below is a summary of the key changes and enhancements made:
  - Ships and attacks use **high-quality sprite images**  
 
 ## GUI design
-golden rules of GUI etc etc
+The visual design of the Battleships game adheres closely to the **Golden Rules of User Interface Design**, ensuring a clear, engaging, and user-friendly experience.
+
+ - **Consistency**  
+   - The entire interface follows a cohesive **hand-drawn notebook theme**, from the background grid to buttons and fonts.  
+   - Button placement is consistent across screens (e.g., "Back" always appears in the upper-right corner).  
+   - Visual elements like grids, ships, and hearts are uniformly styled and scaled.
+
+ - **Feedback**  
+   - Players receive immediate visual and audio feedback after each action:  
+     - Hits show a broken ship image and play an explosion sound.  
+     - Misses display a water image and play a splash sound.  
+     - Turn indicators and highlighted active boards provide clear visual cues.
+
+ - **Simplicity**  
+   - The interface avoids unnecessary complexity — only essential elements are shown per screen.  
+   - Navigation is intuitive, with a minimal set of clearly labeled buttons like "Play", "Quit", and "Settings".  
+   - Game states (Intro, Menu, Game, Winner) are cleanly separated and visually distinct.
+
+ - **User-Friendly Layout**  
+   - Large, clickable buttons are easy to interact with.  
+   - Player boards are evenly spaced and dynamically positioned depending on the number of players.  
+   - The use of visual elements like hearts for lives, text for turns, and central alignment of messages ensures readability.
+
+Overall, the GUI is visually distinctive, functionally intuitive, and supports a smooth user experience throughout the game.
 
 ## AI tools
