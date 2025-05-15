@@ -9,7 +9,7 @@ Sink all your opponents ships before they sink yours
 **Multiplayer-** two or more (write how many at the end here) players battle at the same computer  
   
 **Rules**    
- - Each player has a square grid (size depending on player's choice at the start of the game) of ships with varying sizes
+ * Each player has a square grid (size depending on player's choice at the start of the game) of ships with varying sizes
  - Players take turns clicking on the opponent's grid
  - Hits are marked as this--- misses are marked as this--- and play this sound etc
  - The first player to sink all the opponents ships first wins... also talk about scoring here
