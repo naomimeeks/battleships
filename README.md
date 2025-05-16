@@ -136,3 +136,12 @@ The visual design of the Battleships game adheres closely to the **Golden Rules 
 Overall, the GUI is visually distinctive, functionally intuitive, and supports a smooth user experience throughout the game.
 
 ## AI tools
+- Approximately 40–50% of this project was supported through AI-assisted development  
+ - The core structure, including the core classes (`Board`, `Square`, `Button`, `AI classes`), game flow, and screen transitions, was designed and implemented by us
+   
+ - AI assistance was used primarily for:  
+   - Debugging issues in game logic and turn order  
+   - Helping resolve bugs with event handling, such as click detection and player elimination  
+   - Offering suggestions for GUI implementation, including use of Pygame image scaling, blitting, and font rendering  
+   - Improving efficiency in repetitive sections of code (e.g., drawing grids, checking ship status)  
+   - Assisting in writing documentation, including structuring the README and formatting Markdown  
