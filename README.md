@@ -5,17 +5,21 @@ The goal of the game is to sink all of your opponents’ ships before they sink 
 Each player is given a hidden fleet of ships placed randomly on their grid. By taking turns to attack tiles on enemy boards, players must locate and destroy all ship segments.  
 The last remaining player with any ships left on their board is declared the winner.
   
-**Game modes**  
-**1vs Computer-** individual player battles an AI opponent with different difficulties, easy, medium and hard  
-**Multiplayer-** two or more (write how many at the end here) players battle at the same computer  
+**1 vs Computer** – Player battles against an AI opponent with three difficulty options:  
+ - **Easy** – random tile selection  
+ - **Medium** – targets adjacent tiles after a hit  
+ - **Hard** – uses a probability heatmap to predict ship positions
+
+**Multiplayer** – Up to **4 human players** take turns on the same device
   
 **Rules**    
  - Each player is given a square grid (9x9) with **3 randomly placed ships** of different sizes (2, 3, and 4 tiles)  
  - Players take turns clicking on their opponents' boards to guess where ships are hidden  
  - A **hit** is shown with a **broken ship image** and plays an **explosion sound**  
  - A **miss** is shown with a **splash image** and plays a **water droplet sound**  
- - Each player has **3 lives**, visually represented with **heart icons** next to their board  
- - When all of a player’s ships are hit, they are eliminated from the game  
+- Each player has **3 lives**, shown as **heart icons** beside their board  
+ - A life is lost **each time a full ship is destroyed**  
+ - When all 3 ships are sunk, the player is eliminated from the game
  - Turns automatically skip players who have been eliminated  
  - The last remaining player with ships on the board is declared the **winner**  
  - In previous versions, scoring awarded **3 points per hit**, but this version uses visual indicators and player elimination instead of numerical scores  
@@ -57,7 +61,8 @@ The last remaining player with any ships left on their board is declared the win
    - If the square is empty:  
      - A **water splash image** is shown  
      - A **splash sound** is played  
-   - Each player has **3 lives**, displayed as heart icons beside their board  
+   - Lives are displayed as heart icons beside each board  
+   - **Each heart disappears** when a full ship is sunk, visually tracking remaining lives
 
 5. **Turns and Elimination**  
    - Turns rotate automatically  
