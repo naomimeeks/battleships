@@ -156,11 +156,16 @@ The enhanced Battleships game aimed to improve user experience through a polishe
 
 **What We Achieved:**
 **GUI Design & Usability**
-- The interface is consistent, visually engaging, and user-friendly — following the Golden Rules of UI Design (e.g., consistent layout, feedback, simplicity).
+- The interface is consistent, visually engaging, and user-friendly; following the Golden Rules of UI Design (e.g., consistent layout, feedback, simplicity).
 - We used hand-drawn visuals and clean typography to support clarity and visual appeal.
 
+**Option 4: Display Current Time and Points (Adapted)**
+- We replaced traditional time and point tracking with a more visual system using **heart icons** to represent lives.
+- This design aligns better with the game's turn-based pacing and enhances clarity for younger or casual players.
+- The visual system communicates progress and risk at a glance, avoiding clutter and supporting a cleaner UI.
+
 **Option 5: Quit and Restart Functionality**
-- A clear **Settings menu** includes options to **restart** the game or return to the **main menu** at any time.
+- A clear Settings menu includes options to restart the game or return to the main menu at any time.
 
 **Option 6: Final Score Logic (Adapted)**
 - Instead of a numerical score, players "lose lives" visually through disappearing heart icons.
@@ -168,14 +173,12 @@ The enhanced Battleships game aimed to improve user experience through a polishe
 - We adapted scoring into a visual elimination mechanic to better suit multiplayer dynamics.
 
 **Option 7: Multimedia Components**
-- The game uses **custom sounds** (explosions, splashes, trumpets) and **images** (ships, water, hearts) for immersive feedback.
+- The game uses custom sounds (explosions, splashes, trumpets) and images (ships, water, hearts) for immersive feedback.
 - Each interaction gives the player both visual and audio cues.
 
 **Option 8: Option for More Than Two Players**
-- Fully supports **1 to 4 players**, dynamically laying out boards for all participants.
-- Also includes **AI player modes** with three difficulty levels.
-
----
+- Fully supports 1 to 4 players, dynamically laying out boards for all participants.
+- Also includes AI player modes with three difficulty levels.
 
 **What We Chose Not to Include (and Why):**
 **Option 1: Adjust Number of Rows and Columns**
@@ -183,16 +186,12 @@ The enhanced Battleships game aimed to improve user experience through a polishe
 - Dynamic resizing would require full redesign of the grid layout and ship placement logic — deemed unnecessary for the gameplay scope.
 
 **Option 2: Input Method Selection**
-- All input is **mouse-based** for consistency and clarity.
+- All input is mouse-based for consistency and clarity.
 - Adding keyboard input would not improve gameplay meaningfully and could create confusion or conflicts with mouse actions.
 
 **Option 3: GUI Customisation Options**
 - While players cannot customise colors or styles, the theme is intentionally unified and consistent.
 - Aesthetic options were deprioritized in favour of polish, gameplay clarity, and simplicity.
-
-**Option 4: Display Current Time and Points**
-- Since scoring was visual (heart lives) and time-tracking was not central to gameplay, this feature was not implemented.
-- The turn-based nature of the game made a timer unnecessary.
 
 **Summary:**
 We chose features that directly improve player experience and engagement while avoiding over-complication. The game is polished, consistent, and supports dynamic multiplayer gameplay with strategic depth through AI and lives tracking. Future updates could explore optional themes or more in-depth stat tracking if user demand calls for it.
